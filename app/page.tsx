@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { db } from "@/app/lib/firebase";
+import { db } from "./lib/firebase";
 import { collection, onSnapshot } from "firebase/firestore";
 
 import SidebarNav from "./components/sidebar";
@@ -14,7 +14,7 @@ import VideosManagement from "./components/VideosManagement";
 import PhysiciansRegistry from "./components/PhysiciansRegistry";
 import SocialFeedManagement from "./components/SocialFeedManagement";
 import AppointmentBookManagement from "./components/AppointmentBookManagement";
-import PushAlertsDispatch from "./components/PushAlertsDispatch"; // 👈 1. Imported here
+import PushAlertsDispatch from "./components/PushAlertsDispatch";
 
 interface DashboardStats {
   totalAppointments: number;
