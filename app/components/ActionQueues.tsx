@@ -151,8 +151,11 @@ export default function ActionQueues() {
                 {consultation.userName}
               </h4>
               {(consultation.date || consultation.time) && (
-                <span className="text-[11px] font-mono font-medium text-amber-700 bg-amber-50 border border-amber-100 px-2 py-0.5 rounded-md">
-                  {consultation.date.split("T")[0]} @ {consultation.time}
+                <span className="text-[11px] font-mono font-medium text-amber-700 bg-amber-50 border border-amber-100 px-2 py-0.5 rounded">
+                  {consultation.date
+                    ? consultation.date.split("T")[0]
+                    : "No Date"}{" "}
+                  @ {consultation.time || "TBD"}
                 </span>
               )}
             </div>

@@ -352,9 +352,11 @@ export default function ArticlesManagement() {
                       className="w-full h-full object-cover"
                       onError={(e) => {
                         e.currentTarget.style.display = "none";
-                        const fallback = e.currentTarget.nextURIPathElement;
-                        if (fallback)
+                        // Use the native nextElementSibling property instead
+                        const fallback = e.currentTarget.nextElementSibling;
+                        if (fallback) {
                           (fallback as HTMLElement).style.display = "flex";
+                        }
                       }}
                     />
                   ) : null}
