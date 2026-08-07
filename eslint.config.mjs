@@ -12,6 +12,9 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Vendored shadcn/Base UI library (base-ui useRender/ref patterns trip
+    // the React Compiler lint rules; these are third-party generated files).
+    "components/ui/**",
   ]),
 ]);
 

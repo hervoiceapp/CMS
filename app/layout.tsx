@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { Providers } from "@/components/providers";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -14,7 +15,8 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "HerVoice || Content Management System (CMS)",
-  description: "A secure, private, and intuitive content management system for HerVoice app administrators.",
+  description:
+    "A secure, private, and intuitive content management system for HerVoice app administrators.",
 };
 
 export default function RootLayout({
@@ -25,9 +27,12 @@ export default function RootLayout({
   return (
     <html
       lang="en"
+      suppressHydrationWarning
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full">
+        <Providers>{children}</Providers>
+      </body>
     </html>
   );
 }
