@@ -1,89 +1,132 @@
 rules_version = '2';
+
+// HerVoice Firestore Security Rules
+// Project: kolado-mis (shared between the HerVoice mobile app and the CMS)
+//
+// Model:
+//  - `users/{uid}` access is limited to the owner. The mobile community screen
+//    reads the whole `users` collection in the app today; that is a known
+//    design flaw being fixed. Until the app is updated to read "members"
+//    without PII, unauthenticated reads are denied here.
+//  - Public content collections (articles, podcasts, videos, doctors, groups,
+//    posts, notifications) are readable by any authenticated user of the app.
+//  - Only the CMS admin/medical users (Firebase custom claim role) may write
+//    to content collections, with the exception of like/saved counters the
+//    app increments on articles and videos.
+
 service cloud.firestore {
   match /databases/{database}/documents {
-    // ---- Helpers ----
-    function signedIn() {
+
+    // ---------- Helper helpers ----------
+    function isSignedIn() {
       return request.auth != null;
     }
-    function isAdmin() {
-      return signedIn() && request.auth.token.role == 'admin';
-    }
-    function isMedical() {
-      return signedIn() && request.auth.token.role == 'medical';
-    }
-    function isStaff() {
-      return isAdmin() || isMedical();
-    }
+
     function isOwner(uid) {
-      return signedIn() && request.auth.uid == uid;
-    }
-    // Mobile end-users bump likes/saved on content; only those fields.
-    function onlyLikesSaves() {
-      return signedIn()
-        && request.resource.data.diff(resource.data)
-             .affectedKeys().hasOnly(['likes', 'saved']);
+      return isSignedIn() && request.auth.uid == uid;
     }
 
-    // ---- CMS content (tier: end-user reads, staff writes) ----
-    match /articles/{id} {
-      allow read: if signedIn();
-      allow create, delete: if isStaff();
-      allow update: if isStaff() || onlyLikesSaves();
-    }
-    match /podcasts/{id} {
-      allow read: if signedIn();
-      allow create, update, delete: if isStaff();
-    }
-    match /videos/{id} {
-      allow read: if signedIn();
-      allow create, delete: if isStaff();
-      allow update: if isStaff() || onlyLikesSaves();
+    // CMS staff (dashboard) - has custom claim role 'admin' or 'medical'
+    function isCmsAdmin() {
+      return isSignedIn()
+        && (request.auth.token.role == 'admin'
+            || request.auth.token.role == 'medical');
     }
 
-    // ---- Doctors registry (tier: end-user + medical read, admin write) ----
-    match /doctors/{id} {
-      allow read: if signedIn();
-      allow create, update, delete: if isAdmin();
-    }
-
-    // ---- Appointments (tier: owner CRUD, staff read/update) ----
-    match /appointments/{id} {
-      allow read: if isStaff() || isOwner(resource.data.userId);
-      allow create: if isOwner(request.resource.data.userId);
-      allow update: if isStaff() || isOwner(resource.data.userId);
-      allow delete: if isOwner(resource.data.userId);
-    }
-
-    // ---- Community feed (tier: authed read/create, author update, admin moderation) ----
-    match /posts/{id} {
-      allow read: if signedIn();
-      allow create: if signedIn();
-      allow update: if isAdmin() || isOwner(resource.data.authorId);
-      allow delete: if isAdmin() || isOwner(resource.data.authorId);
-    }
-
-    // ---- Profiles (tier: read for authed, owner/admin writes) ----
+    // ---------- Users ----------
     match /users/{uid} {
-      allow read: if signedIn();
-      allow write: if isOwner(uid) || isAdmin();
+      // A user may read/write their own profile.
+      allow read, write: if isOwner(uid);
     }
 
-    // ---- Community/social ----
+    // ---------- Public content collections (read-only to app users) ----------
+    // The mobile app renders these read-only.
+    match /articles/{id} {
+      allow read: if isSignedIn();
+      // CMS staff may create/update/delete.
+      allow create, update, delete: if isCmsAdmin();
+      // The app only ever increments like/saved counters.
+      // Fields the app may touch: likes, saved. Everything else admin-only.
+      allow update: if isSignedIn()
+        && request.resource.data.diff(resource.data).affectedKeys()
+              .hasOnly(['likes', 'saved'])
+        && request.resource.data.likes is int
+        && request.resource.data.saved is int;
+    }
+
+    match /podcasts/{id} {
+      allow read: if isSignedIn();
+      allow create, update, delete: if isCmsAdmin();
+    }
+
+    match /videos/{id} {
+      allow read: if isSignedIn();
+      allow create, update, delete: if isCmsAdmin();
+      // App increments like/saved counters on videos.
+      allow update: if isSignedIn()
+        && request.resource.data.diff(resource.data).affectedKeys()
+              .hasOnly(['likes', 'saved'])
+        && request.resource.data.likes is int
+        && request.resource.data.saved is int;
+    }
+
+    match /doctors/{id} {
+      allow read: if isSignedIn();
+      allow create, update, delete: if isCmsAdmin();
+    }
+
     match /groups/{id} {
-      allow read: if signedIn();
-      allow write: if signedIn();
-    }
-    match /friendRequests/{id} {
-      allow read: if signedIn();
-      allow write: if signedIn();
+      allow read: if isSignedIn();
+      allow create, update, delete: if isCmsAdmin();
     }
 
-    // ---- Admin-only CMS surfaces ----
-    match /notifications/{id} {
-      allow read, write: if isAdmin();
+    match /posts/{id} {
+      // Members may read the feed, create a post, and delete their own post.
+      allow read: if isSignedIn();
+      allow create: if isSignedIn();
+      allow delete: if isSignedIn() && resource.data.authorId == request.auth.uid;
+      allow update: if isCmsAdmin();
     }
-    match /config/{id} {
-      allow read, write: if isAdmin();
+
+    // Notifications are written by the CMS and read by app users.
+    match /notifications/{id} {
+      allow read: if isSignedIn();
+      allow write: if isCmsAdmin();
+    }
+
+    // ---------- Appointments ----------
+    // The app creates appointments; the CMS changes their status.
+    match /appointments/{id} {
+      allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid;
+      allow read: if isSignedIn()
+        && (resource.data.userId == request.auth.uid || isCmsAdmin());
+      allow update: if isCmsAdmin()
+        || (isSignedIn() && resource.data.userId == request.auth.uid);
+      allow delete: if isSignedIn() && resource.data.userId == request.auth.uid;
+    }
+
+    // ---------- Friend requests ----------
+    match /friendRequests/{id} {
+      allow read, create: if isSignedIn();
+      allow delete, update: if isSignedIn();
+    }
+
+    // ---------- Community member search (PII-safe proxy) ----------
+    // NOTE: The mobile app currently reads `users` to power "nearby members".
+    // That exposes full PII. The preferred approach is a curated
+    // `members/{uid}` collection containing only display fields (name, area,
+    // avatar) instead of reading `users`. Rules below allow reading `members`.
+    match /members/{uid} {
+      allow read: if isSignedIn();
+      allow write: if isOwner(uid);
+    }
+
+    // ---------- CMS config singleton ----------
+    match /config/{docId} {
+      // The app reads the AI copilot config on chat start.
+      allow read: if isSignedIn();
+      // Only CMS staff may write config.
+      allow write: if isCmsAdmin();
     }
   }
 }

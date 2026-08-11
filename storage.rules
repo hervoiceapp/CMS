@@ -1,0 +1,38 @@
+rules_version = '2';
+
+// HerVoice Firebase Storage Security Rules
+// Project: kolado-mis
+// Bucket: kolado-mis.firebasestorage.app
+//
+// - Authenticated app users may read any file (content is public to the app).
+// - Uploads/deletes are restricted to CMS staff (custom claim role).
+// - Uploads go under prefixes: her_voice_meta/**, uploads/**
+
+service firebase.storage {
+  match /b/{bucket}/o {
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isCmsAdmin() {
+      return request.auth != null
+        && (request.auth.token.role == 'admin'
+            || request.auth.token.role == 'medical');
+    }
+
+    // Read: any signed-in app user.
+    match /{allPaths=**} {
+      allow read: if isSignedIn();
+    }
+
+    // Write (upload/delete): CMS staff only, under managed prefixes.
+    match /her_voice_meta/{allPaths=**} {
+      allow write: if isCmsAdmin();
+    }
+
+    // Legacy uploads prefix.
+    match /uploads/{allPaths=**} {
+      allow write: if isCmsAdmin();
+    }
+  }
+}
