@@ -53,12 +53,16 @@ export default function VideosPage() {
       category: "Therapy Guide",
       duration: "",
       image_url: "",
+      imageAlt: "",
       uri: "",
     },
   });
 
+  const [status, setStatus] = useState<"draft" | "published">("published");
+
   const openCreate = () => {
     setEditing(null);
+    setStatus("published");
     form.reset({
       title: "",
       description: "",
@@ -66,6 +70,7 @@ export default function VideosPage() {
       category: "Therapy Guide",
       duration: "",
       image_url: "",
+      imageAlt: "",
       uri: "",
     });
     setModalOpen(true);
@@ -73,6 +78,7 @@ export default function VideosPage() {
 
   const openEdit = (item: Video) => {
     setEditing(item);
+    setStatus(item.status ?? "published");
     form.reset({
       title: item.title,
       description: item.description,
@@ -80,6 +86,7 @@ export default function VideosPage() {
       category: (item.category as VideoForm["category"]) || "Therapy Guide",
       duration: item.duration,
       image_url: item.image_url,
+      imageAlt: item.imageAlt || "",
       uri: item.uri,
     });
     setModalOpen(true);
@@ -92,12 +99,19 @@ export default function VideosPage() {
         await updateDoc(doc(db, "videos", editing.id), {
           ...values,
           createdAt: editing.createdAt ?? serverTimestamp(),
+          status,
+          publishedAt:
+            status === "published"
+              ? editing.publishedAt ?? serverTimestamp()
+              : editing.publishedAt ?? null,
         });
         toast.add({ title: "Video updated", type: "success" });
       } else {
         await addDoc(collection(db, "videos"), {
           ...values,
           createdAt: serverTimestamp(),
+          status,
+          publishedAt: status === "published" ? serverTimestamp() : null,
         });
         toast.add({ title: "Video uploaded", type: "success" });
       }
@@ -171,6 +185,19 @@ export default function VideosPage() {
         cell: ({ getValue }) => {
           const value = String(getValue() ?? "");
           return value || <span className="text-muted-foreground">—</span>;
+        },
+      },
+      {
+        accessorKey: "status",
+        header: "Status",
+        cell: ({ getValue }) => {
+          const value = String(getValue() ?? "");
+          const isPublished = value !== "draft";
+          return (
+            <Badge variant={isPublished ? "secondary" : "outline"}>
+              {isPublished ? "Published" : "Draft"}
+            </Badge>
+          );
         },
       },
       {
@@ -321,6 +348,31 @@ export default function VideosPage() {
               value={form.watch("image_url")}
               onChange={(gsUrl) => form.setValue("image_url", gsUrl)}
             />
+
+            <div className="space-y-2">
+              <Label htmlFor="video-image-alt">Thumbnail Alt Text</Label>
+              <Input
+                id="video-image-alt"
+                placeholder="Describe the thumbnail for screen readers"
+                {...form.register("imageAlt")}
+              />
+              <p className="text-xs text-muted-foreground">
+                Accessible description read aloud to screen-reader users.
+              </p>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="video-status">Visibility</Label>
+              <NativeSelect
+                id="video-status"
+                className="w-full"
+                value={status}
+                onChange={(e) => setStatus(e.target.value as "draft" | "published")}
+              >
+                <NativeSelectOption value="published">Published (live in app)</NativeSelectOption>
+                <NativeSelectOption value="draft">Draft (hidden from app)</NativeSelectOption>
+              </NativeSelect>
+            </div>
           </form>
 
           <DialogFooter>

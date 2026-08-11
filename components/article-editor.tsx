@@ -37,6 +37,7 @@ export function ArticleEditor({ articleId }: { articleId?: string }) {
       author: "",
       content: "",
       imageUrl: "",
+      imageAlt: "",
     },
   });
 
@@ -57,6 +58,7 @@ export function ArticleEditor({ articleId }: { articleId?: string }) {
             author: data.author || "",
             content: data.content || "",
             imageUrl: data.imageUrl || "",
+            imageAlt: data.imageAlt || "",
           });
         } else {
           toast.add({ title: "Article not found", type: "error" });
@@ -99,6 +101,7 @@ export function ArticleEditor({ articleId }: { articleId?: string }) {
         category: data.category,
         author: data.author,
         subtitle: data.subtitle,
+        imageAlt: data.imageAlt,
       }),
     );
   }, [articleId, form]);
@@ -122,10 +125,12 @@ export function ArticleEditor({ articleId }: { articleId?: string }) {
       content: values.content,
       author: values.author,
       imageUrl: values.imageUrl,
+      imageAlt: values.imageAlt || "",
       imageColor: editing?.imageColor ?? "",
       likes: editing?.likes ?? 0,
       saved: editing?.saved ?? 0,
       tags: editing?.tags ?? [],
+      status: publish ? "published" : "draft",
     };
 
     setSaving(true);
@@ -134,12 +139,16 @@ export function ArticleEditor({ articleId }: { articleId?: string }) {
         await updateDoc(doc(db, "articles", editing.id), {
           ...payload,
           createdAt: editing.createdAt,
+          publishedAt: publish
+            ? editing.publishedAt ?? new Date()
+            : editing.publishedAt ?? null,
         });
-        toast.add({ title: publish ? "Article published" : "Article updated", type: "success" });
+        toast.add({ title: publish ? "Article published" : "Draft saved", type: "success" });
       } else {
         await addDoc(collection(db, "articles"), {
           ...payload,
           createdAt: serverTimestamp(),
+          publishedAt: publish ? serverTimestamp() : null,
         });
         localStorage.removeItem(DRAFT_KEY);
         toast.add({ title: publish ? "Article published" : "Draft saved", type: "success" });
@@ -194,6 +203,18 @@ export function ArticleEditor({ articleId }: { articleId?: string }) {
           value={form.watch("imageUrl")}
           onChange={(gsUrl) => form.setValue("imageUrl", gsUrl)}
         />
+
+        <div className="space-y-2">
+          <Label htmlFor="article-image-alt">Cover Image Alt Text</Label>
+          <Input
+            id="article-image-alt"
+            placeholder="Describe the cover image for screen readers"
+            {...form.register("imageAlt")}
+          />
+          <p className="text-xs text-muted-foreground">
+            Accessible description read aloud to screen-reader users.
+          </p>
+        </div>
 
         <div className="space-y-2">
           <Label htmlFor="article-title">Article Title</Label>

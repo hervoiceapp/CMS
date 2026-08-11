@@ -1,5 +1,7 @@
 import type { Timestamp } from "firebase/firestore";
 
+export type ContentStatus = "draft" | "published";
+
 export interface Article {
   id: string;
   title: string;
@@ -9,10 +11,13 @@ export interface Article {
   author: string;
   createdAt: Timestamp | Date | number | undefined;
   imageUrl: string;
+  imageAlt?: string;
   imageColor: string;
   likes: number;
   saved: number;
   tags: string[];
+  status?: ContentStatus;
+  publishedAt?: Timestamp | Date | number;
 }
 
 export interface Podcast {
@@ -24,7 +29,10 @@ export interface Podcast {
   createdAt: Timestamp | Date | number | undefined;
   imageColor: string;
   image_url: string;
+  imageAlt?: string;
   uri: string;
+  status?: ContentStatus;
+  publishedAt?: Timestamp | Date | number;
 }
 
 export interface Video {
@@ -35,8 +43,11 @@ export interface Video {
   category: string;
   duration: string;
   image_url: string;
+  imageAlt?: string;
   uri: string;
   createdAt: Timestamp | Date | number | undefined;
+  status?: ContentStatus;
+  publishedAt?: Timestamp | Date | number;
 }
 
 export interface Doctor {
@@ -44,8 +55,16 @@ export interface Doctor {
   name: string;
   title: string;
   image?: string;
+  imageAlt?: string;
   color?: string;
   rating?: number;
+  status?: ContentStatus;
+  publishedAt?: Timestamp | Date | number;
+}
+
+/** True when a doc is visible to the app: published, or legacy docs without a status. */
+export function isPublished(status: ContentStatus | undefined): boolean {
+  return status !== "draft";
 }
 
 export interface Post {

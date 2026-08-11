@@ -3,7 +3,7 @@
 import { useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { addDoc, collection, deleteDoc, doc, updateDoc } from "firebase/firestore";
+import { addDoc, collection, deleteDoc, doc, updateDoc, serverTimestamp } from "firebase/firestore";
 import type { ColumnDef } from "@tanstack/react-table";
 
 import { db } from "@/lib/firebase";
@@ -48,17 +48,22 @@ export default function DoctorsPage() {
       name: "",
       title: "Psychiatric Nurse",
       image: "",
+      imageAlt: "",
       color: "yellow",
       rating: undefined,
     },
   });
 
+  const [status, setStatus] = useState<"draft" | "published">("published");
+
   const openCreate = () => {
     setEditing(null);
+    setStatus("published");
     form.reset({
       name: "",
       title: "Psychiatric Nurse",
       image: "",
+      imageAlt: "",
       color: "yellow",
       rating: undefined,
     });
@@ -67,10 +72,12 @@ export default function DoctorsPage() {
 
   const openEdit = (item: Doctor) => {
     setEditing(item);
+    setStatus(item.status ?? "published");
     form.reset({
       name: item.name,
       title: item.title as DoctorForm["title"],
       image: item.image ?? "",
+      imageAlt: item.imageAlt || "",
       color: item.color ?? "yellow",
       rating: item.rating ?? undefined,
     });
@@ -81,10 +88,21 @@ export default function DoctorsPage() {
     setSubmitting(true);
     try {
       if (editing) {
-        await updateDoc(doc(db, "doctors", editing.id), values);
+        await updateDoc(doc(db, "doctors", editing.id), {
+          ...values,
+          status,
+          publishedAt:
+            status === "published"
+              ? editing.publishedAt ?? serverTimestamp()
+              : editing.publishedAt ?? null,
+        });
         toast.add({ title: "Doctor updated", type: "success" });
       } else {
-        await addDoc(collection(db, "doctors"), values);
+        await addDoc(collection(db, "doctors"), {
+          ...values,
+          status,
+          publishedAt: status === "published" ? serverTimestamp() : null,
+        });
         toast.add({ title: "Doctor registered", type: "success" });
       }
       setModalOpen(false);
@@ -159,6 +177,19 @@ export default function DoctorsPage() {
           );
         },
       },
+      {
+        accessorKey: "status",
+        header: "Status",
+        cell: ({ getValue }) => {
+          const value = String(getValue() ?? "");
+          const isPublished = value !== "draft";
+          return (
+            <Badge variant={isPublished ? "secondary" : "outline"}>
+              {isPublished ? "Published" : "Draft"}
+            </Badge>
+          );
+        },
+      },
     ],
     [],
   );
@@ -209,6 +240,31 @@ export default function DoctorsPage() {
               value={form.watch("image")}
               onChange={(gsUrl) => form.setValue("image", gsUrl)}
             />
+
+            <div className="space-y-2">
+              <Label htmlFor="doctor-image-alt">Profile Image Alt Text</Label>
+              <Input
+                id="doctor-image-alt"
+                placeholder="Describe the photo for screen readers"
+                {...form.register("imageAlt")}
+              />
+              <p className="text-xs text-muted-foreground">
+                Accessible description read aloud to screen-reader users.
+              </p>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="doctor-status">Visibility</Label>
+              <NativeSelect
+                id="doctor-status"
+                className="w-full"
+                value={status}
+                onChange={(e) => setStatus(e.target.value as "draft" | "published")}
+              >
+                <NativeSelectOption value="published">Published (live in app)</NativeSelectOption>
+                <NativeSelectOption value="draft">Draft (hidden from app)</NativeSelectOption>
+              </NativeSelect>
+            </div>
 
             <div className="space-y-2">
               <Label htmlFor="name">Full Name & Credential</Label>

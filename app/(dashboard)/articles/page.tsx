@@ -105,6 +105,19 @@ export default function ArticlesPage() {
         header: "Author",
       },
       {
+        accessorKey: "status",
+        header: "Status",
+        cell: ({ getValue }) => {
+          const value = String(getValue() ?? "");
+          const isPublished = value !== "draft";
+          return (
+            <Badge variant={isPublished ? "secondary" : "outline"}>
+              {isPublished ? "Published" : "Draft"}
+            </Badge>
+          );
+        },
+      },
+      {
         accessorKey: "likes",
         header: "Likes",
       },

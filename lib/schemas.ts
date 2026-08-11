@@ -6,6 +6,9 @@ import {
   AI_MODELS,
 } from "./constants";
 
+export const CONTENT_STATUSES = ["draft", "published"] as const;
+export type ContentStatusValue = (typeof CONTENT_STATUSES)[number];
+
 export const articleSchema = z.object({
   title: z.string().min(1, "Title is required"),
   subtitle: z.string().optional(),
@@ -13,6 +16,7 @@ export const articleSchema = z.object({
   author: z.string().min(1, "Author is required"),
   content: z.string().min(1, "Article body is required"),
   imageUrl: z.string().optional(),
+  imageAlt: z.string().optional(),
   imageColor: z.string().optional(),
 });
 
@@ -24,6 +28,7 @@ export const podcastSchema = z.object({
   author: z.string().min(1, "Author is required"),
   duration: z.string().optional(),
   image_url: z.string().optional(),
+  imageAlt: z.string().optional(),
   uri: z.string().min(1, "Audio file is required"),
   imageColor: z.string(),
 });
@@ -37,6 +42,7 @@ export const videoSchema = z.object({
   category: z.enum(VIDEO_CATEGORIES),
   duration: z.string().optional(),
   image_url: z.string().optional(),
+  imageAlt: z.string().optional(),
   uri: z.string().min(1, "Video file is required"),
 });
 
@@ -46,6 +52,7 @@ export const doctorSchema = z.object({
   name: z.string().min(1, "Name is required"),
   title: z.enum(DOCTOR_TITLES),
   image: z.string().optional(),
+  imageAlt: z.string().optional(),
   color: z.string().optional(),
   rating: z
     .number()

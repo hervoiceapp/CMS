@@ -22,6 +22,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { NativeSelect, NativeSelectOption } from "@/components/ui/native-select";
 import {
   Dialog,
   DialogContent,
@@ -50,19 +51,24 @@ export default function PodcastsPage() {
       author: "",
       duration: "",
       image_url: "",
+      imageAlt: "",
       uri: "",
       imageColor: "#FECACA",
     },
   });
 
+  const [status, setStatus] = useState<"draft" | "published">("published");
+
   const openCreate = () => {
     setEditing(null);
+    setStatus("published");
     form.reset({
       title: "",
       subtitle: "",
       author: "",
       duration: "",
       image_url: "",
+      imageAlt: "",
       uri: "",
       imageColor: "#FECACA",
     });
@@ -71,12 +77,14 @@ export default function PodcastsPage() {
 
   const openEdit = (item: Podcast) => {
     setEditing(item);
+    setStatus(item.status ?? "published");
     form.reset({
       title: item.title,
       subtitle: item.subtitle,
       author: item.author,
       duration: item.duration,
       image_url: item.image_url,
+      imageAlt: item.imageAlt || "",
       uri: item.uri,
       imageColor: item.imageColor || "#FECACA",
     });
@@ -90,12 +98,19 @@ export default function PodcastsPage() {
         await updateDoc(doc(db, "podcasts", editing.id), {
           ...values,
           createdAt: editing.createdAt ?? serverTimestamp(),
+          status,
+          publishedAt:
+            status === "published"
+              ? editing.publishedAt ?? serverTimestamp()
+              : editing.publishedAt ?? null,
         });
         toast.add({ title: "Podcast updated", type: "success" });
       } else {
         await addDoc(collection(db, "podcasts"), {
           ...values,
           createdAt: serverTimestamp(),
+          status,
+          publishedAt: status === "published" ? serverTimestamp() : null,
         });
         toast.add({ title: "Podcast uploaded", type: "success" });
       }
@@ -169,6 +184,19 @@ export default function PodcastsPage() {
       {
         accessorKey: "author",
         header: "Author",
+      },
+      {
+        accessorKey: "status",
+        header: "Status",
+        cell: ({ getValue }) => {
+          const value = String(getValue() ?? "");
+          const isPublished = value !== "draft";
+          return (
+            <Badge variant={isPublished ? "secondary" : "outline"}>
+              {isPublished ? "Published" : "Draft"}
+            </Badge>
+          );
+        },
       },
       {
         accessorKey: "duration",
@@ -292,6 +320,31 @@ export default function PodcastsPage() {
               value={form.watch("image_url")}
               onChange={(gsUrl) => form.setValue("image_url", gsUrl)}
             />
+
+            <div className="space-y-2">
+              <Label htmlFor="podcast-image-alt">Cover Artwork Alt Text</Label>
+              <Input
+                id="podcast-image-alt"
+                placeholder="Describe the artwork for screen readers"
+                {...form.register("imageAlt")}
+              />
+              <p className="text-xs text-muted-foreground">
+                Accessible description read aloud to screen-reader users.
+              </p>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="podcast-status">Visibility</Label>
+              <NativeSelect
+                id="podcast-status"
+                className="w-full"
+                value={status}
+                onChange={(e) => setStatus(e.target.value as "draft" | "published")}
+              >
+                <NativeSelectOption value="published">Published (live in app)</NativeSelectOption>
+                <NativeSelectOption value="draft">Draft (hidden from app)</NativeSelectOption>
+              </NativeSelect>
+            </div>
           </form>
 
           <DialogFooter>
