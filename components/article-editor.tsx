@@ -8,7 +8,7 @@ import { addDoc, collection, doc, getDoc, serverTimestamp, updateDoc } from "fir
 
 import { db } from "@/lib/firebase";
 import { articleSchema, type ArticleForm } from "@/lib/schemas";
-import { ARTICLE_CATEGORIES } from "@/lib/constants";
+import { ARTICLE_CATEGORIES, ARTICLE_COLORS } from "@/lib/constants";
 import type { Article } from "@/lib/types";
 import { RichTextEditor } from "@/components/RichTextEditor";
 import { DropZone } from "@/components/DropZone";
@@ -17,6 +17,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { NativeSelect, NativeSelectOption } from "@/components/ui/native-select";
 import { toast } from "@/components/ui/toast";
+import { cn } from "@/lib/utils";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { ArrowLeft01Icon, SaveIcon, UploadSquare01Icon } from "@hugeicons/core-free-icons";
 
@@ -38,6 +39,8 @@ export function ArticleEditor({ articleId }: { articleId?: string }) {
       content: "",
       imageUrl: "",
       imageAlt: "",
+      imageColor: ARTICLE_COLORS[0],
+      tags: [],
     },
   });
 
@@ -59,6 +62,8 @@ export function ArticleEditor({ articleId }: { articleId?: string }) {
             content: data.content || "",
             imageUrl: data.imageUrl || "",
             imageAlt: data.imageAlt || "",
+            imageColor: data.imageColor || ARTICLE_COLORS[0],
+            tags: Array.isArray(data.tags) ? data.tags : [],
           });
         } else {
           toast.add({ title: "Article not found", type: "error" });
@@ -126,10 +131,10 @@ export function ArticleEditor({ articleId }: { articleId?: string }) {
       author: values.author,
       imageUrl: values.imageUrl,
       imageAlt: values.imageAlt || "",
-      imageColor: editing?.imageColor ?? "",
+      imageColor: values.imageColor || ARTICLE_COLORS[0],
       likes: editing?.likes ?? 0,
       saved: editing?.saved ?? 0,
-      tags: editing?.tags ?? [],
+      tags: values.tags ?? [],
       status: publish ? "published" : "draft",
     };
 
@@ -213,6 +218,49 @@ export function ArticleEditor({ articleId }: { articleId?: string }) {
           />
           <p className="text-xs text-muted-foreground">
             Accessible description read aloud to screen-reader users.
+          </p>
+        </div>
+
+        <div className="space-y-2">
+          <Label>Cover Fallback Color</Label>
+          <div className="flex flex-wrap items-center gap-2">
+            {ARTICLE_COLORS.map((color) => (
+              <button
+                key={color}
+                type="button"
+                aria-label={`Fallback color ${color}`}
+                onClick={() => form.setValue("imageColor", color)}
+                className={cn(
+                  "size-7 rounded-full ring-2 ring-offset-2 transition-all",
+                  form.watch("imageColor") === color
+                    ? "ring-foreground"
+                    : "ring-transparent hover:ring-border",
+                )}
+                style={{ backgroundColor: color }}
+              />
+            ))}
+          </div>
+          <p className="text-xs text-muted-foreground">
+            Used behind the cover image in the app when no image is uploaded.
+          </p>
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="article-tags">Tags (comma-separated)</Label>
+          <Input
+            id="article-tags"
+            placeholder="e.g. Postnatal, Self-care"
+            defaultValue={(form.getValues("tags") ?? []).join(", ")}
+            onChange={(e) => {
+              const tags = e.target.value
+                .split(",")
+                .map((t) => t.trim())
+                .filter(Boolean);
+              form.setValue("tags", tags);
+            }}
+          />
+          <p className="text-xs text-muted-foreground">
+            Optional labels shown on the article card in the app.
           </p>
         </div>
 

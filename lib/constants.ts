@@ -4,6 +4,17 @@ export const ARTICLE_CATEGORIES = [
   "postnatal guidance",
 ] as const;
 
+// No-cover fallback color for article cards (picked by the editor).
+export const ARTICLE_COLORS = [
+  "#FECACA",
+  "#FEF3C7",
+  "#BFDBFE",
+  "#BBF7D0",
+  "#F3E8FF",
+  "#FBCFE8",
+  "#C7D2FE",
+] as const;
+
 export const VIDEO_CATEGORIES = [
   "Therapy Guide",
   "Somatic Exercises",

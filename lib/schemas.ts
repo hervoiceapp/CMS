@@ -18,6 +18,7 @@ export const articleSchema = z.object({
   imageUrl: z.string().optional(),
   imageAlt: z.string().optional(),
   imageColor: z.string().optional(),
+  tags: z.array(z.string()).optional(),
 });
 
 export type ArticleForm = z.infer<typeof articleSchema>;
