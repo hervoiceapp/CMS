@@ -7,12 +7,14 @@ import {
   getSortedRowModel,
   getPaginationRowModel,
   getFilteredRowModel,
+  type Cell,
   type ColumnDef,
   type SortingState,
   type PaginationState,
 } from "@tanstack/react-table";
 
 import { cn } from "@/lib/utils";
+import { useIsMobile } from "@/hooks/use-mobile";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -28,6 +30,12 @@ import {
   Delete02Icon,
   Alert02Icon,
 } from "@hugeicons/core-free-icons";
+
+function renderCellValue<T>(cell: Cell<T, unknown>) {
+  return typeof cell.column.columnDef.cell === "function"
+    ? cell.column.columnDef.cell(cell.getContext())
+    : (cell.getValue() ?? "—");
+}
 
 interface DataTableProps<T> {
   columns: ColumnDef<T>[];
@@ -54,6 +62,7 @@ export function DataTable<T extends { id?: string }>({
   pageSize = 10,
   keyExtractor,
 }: DataTableProps<T>) {
+  const isMobile = useIsMobile();
   const [sorting, setSorting] = useState<SortingState>([]);
   const [globalFilter, setGlobalFilter] = useState("");
   const [pagination, setPagination] = useState<PaginationState>({
@@ -144,6 +153,12 @@ export function DataTable<T extends { id?: string }>({
     );
   }
 
+  const rows = table.getRowModel().rows;
+  const headerGroup = table.getHeaderGroups()[0];
+  const detailHeaders = headerGroup.headers
+    .slice(1)
+    .filter((header) => header.column.id !== "actions");
+
   return (
     <div className="space-y-4">
       {searchable && (
@@ -162,63 +177,109 @@ export function DataTable<T extends { id?: string }>({
       )}
 
       <div className="overflow-hidden rounded-2xl border bg-card">
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm">
-            <thead>
-              {table.getHeaderGroups().map((headerGroup) => (
-                <tr key={headerGroup.id} className="border-b bg-muted/50">
-                  {headerGroup.headers.map((header) => {
-                    const label =
-                      typeof header.column.columnDef.header === "string"
-                        ? header.column.columnDef.header
-                        : "";
-                    const sorted = header.column.getIsSorted();
-                    return (
-                      <th
-                        key={header.id}
-                        onClick={header.column.getToggleSortingHandler()}
-                        className={cn(
-                          "px-4 py-3 text-left text-xs font-medium text-muted-foreground",
-                          header.column.getCanSort() &&
-                            "cursor-pointer select-none hover:text-foreground",
-                        )}
-                      >
-                        <span className="inline-flex items-center gap-1">
-                          {label}
-                          {sorted === "asc" ? (
-                            <HugeiconsIcon icon={ArrowUp01Icon} className="size-3.5" />
-                          ) : sorted === "desc" ? (
-                            <HugeiconsIcon icon={ArrowDown01Icon} className="size-3.5" />
-                          ) : header.column.getCanSort() ? (
-                            <HugeiconsIcon icon={UnfoldMoreIcon} className="size-3.5 opacity-40" />
-                          ) : null}
-                        </span>
-                      </th>
-                    );
-                  })}
-                </tr>
-              ))}
-            </thead>
-            <tbody>
-              {table.getRowModel().rows.map((row) => (
-                <tr
+        {isMobile ? (
+          <ul className="divide-y">
+            {rows.map((row) => {
+              const cells = row.getVisibleCells();
+              const primary = cells.find(
+                (cell) => cell.column.id === headerGroup.headers[0]?.column.id,
+              );
+              const details = detailHeaders
+                .map((header) =>
+                  cells.find((cell) => cell.column.id === header.column.id),
+                )
+                .filter((cell): cell is Cell<T, unknown> => Boolean(cell));
+              const actions = cells.find((cell) => cell.column.id === "actions");
+              return (
+                <li
                   key={keyExtractor ? keyExtractor(row.original) : row.id}
-                  className="border-b transition-colors last:border-0 hover:bg-muted/40"
+                  className="space-y-3 p-4"
                 >
-                  {row.getVisibleCells().map((cell) => (
-                    <td key={cell.id} className="px-4 py-3">
-                      {typeof cell.column.columnDef.cell === "function"
-                        ? cell.column.columnDef.cell(cell.getContext())
-                        : (cell.getValue() ?? "—")}
-                    </td>
-                  ))}
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+                  {primary && <div>{renderCellValue(primary)}</div>}
+                  {details.length > 0 && (
+                    <dl className="grid grid-cols-2 gap-x-4 gap-y-3">
+                      {details.map((cell) => {
+                        const header = detailHeaders.find(
+                          (h) => h.column.id === cell.column.id,
+                        );
+                        const label = header?.column.columnDef.header;
+                        return (
+                          <div key={cell.id} className="min-w-0">
+                            <dt className="text-xs text-muted-foreground">
+                              {typeof label === "string"
+                                ? label
+                                : cell.column.id}
+                            </dt>
+                            <dd className="mt-0.5 min-w-0">
+                              {renderCellValue(cell)}
+                            </dd>
+                          </div>
+                        );
+                      })}
+                    </dl>
+                  )}
+                  {actions && renderCellValue(actions)}
+                </li>
+              );
+            })}
+          </ul>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead>
+                {table.getHeaderGroups().map((headerGroup) => (
+                  <tr key={headerGroup.id} className="border-b bg-muted/50">
+                    {headerGroup.headers.map((header) => {
+                      const label =
+                        typeof header.column.columnDef.header === "string"
+                          ? header.column.columnDef.header
+                          : "";
+                      const sorted = header.column.getIsSorted();
+                      return (
+                        <th
+                          key={header.id}
+                          onClick={header.column.getToggleSortingHandler()}
+                          className={cn(
+                            "px-4 py-3 text-left text-xs font-medium text-muted-foreground",
+                            header.column.getCanSort() &&
+                              "cursor-pointer select-none hover:text-foreground",
+                          )}
+                        >
+                          <span className="inline-flex items-center gap-1">
+                            {label}
+                            {sorted === "asc" ? (
+                              <HugeiconsIcon icon={ArrowUp01Icon} className="size-3.5" />
+                            ) : sorted === "desc" ? (
+                              <HugeiconsIcon icon={ArrowDown01Icon} className="size-3.5" />
+                            ) : header.column.getCanSort() ? (
+                              <HugeiconsIcon icon={UnfoldMoreIcon} className="size-3.5 opacity-40" />
+                            ) : null}
+                          </span>
+                        </th>
+                      );
+                    })}
+                  </tr>
+                ))}
+              </thead>
+              <tbody>
+                {rows.map((row) => (
+                  <tr
+                    key={keyExtractor ? keyExtractor(row.original) : row.id}
+                    className="border-b transition-colors last:border-0 hover:bg-muted/40"
+                  >
+                    {row.getVisibleCells().map((cell) => (
+                      <td key={cell.id} className="px-4 py-3">
+                        {renderCellValue(cell)}
+                      </td>
+                    ))}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
 
-        {table.getRowModel().rows.length === 0 && (
+        {rows.length === 0 && (
           <div className="px-4 py-12 text-center text-sm text-muted-foreground">
             No matching records found.
           </div>

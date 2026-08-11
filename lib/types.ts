@@ -11,7 +11,7 @@ export interface Article {
   imageUrl: string;
   imageColor: string;
   likes: number;
-  saved: string;
+  saved: number;
   tags: string[];
 }
 

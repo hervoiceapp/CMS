@@ -124,8 +124,8 @@ export function ArticleEditor({ articleId }: { articleId?: string }) {
       imageUrl: values.imageUrl,
       imageColor: editing?.imageColor ?? "",
       likes: editing?.likes ?? 0,
-      saved: editing?.saved ?? "",
-      tags: editing?.tags ?? [""],
+      saved: editing?.saved ?? 0,
+      tags: editing?.tags ?? [],
     };
 
     setSaving(true);
