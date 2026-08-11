@@ -1,4 +1,5 @@
 "use client"
+import { useMemo } from "react";
 import Logo from "@/components/ui/logo"
 import { usePathname } from "next/navigation";
 import Link from "next/link";
@@ -18,6 +19,8 @@ import {
   SidebarSeparator,
 } from "@/components/ui/sidebar";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { useAuth, type Role } from "@/components/auth-provider";
+import { Button } from "@/components/ui/button";
 import {
   DashboardCircleIcon,
   MedicalFileIcon,
@@ -35,6 +38,7 @@ interface NavItem {
   label: string;
   icon: IconSvgElement;
   exact?: boolean;
+  roles?: Role[];
 }
 
 interface NavGroup {
@@ -57,26 +61,43 @@ const navGroups: NavGroup[] = [
   },
   {
     label: "Community & Support",
-    items: [{ href: "/feed", label: "Social Feed", icon: UserMultipleIcon }],
+    items: [{ href: "/feed", label: "Social Feed", icon: UserMultipleIcon, roles: ["admin"] }],
   },
   {
     label: "Clinical Providers",
     items: [
-      { href: "/doctors", label: "Physicians Registry", icon: StethoscopeIcon },
+      { href: "/doctors", label: "Physicians Registry", icon: StethoscopeIcon, roles: ["admin"] },
       { href: "/appointments", label: "Appointment Book", icon: CalendarCheckIcon },
     ],
   },
   {
     label: "System & Engagement",
     items: [
-      { href: "/alerts", label: "Push Alerts Dispatch", icon: FlagIcon },
-      { href: "/copilot", label: "AI Copilot", icon: BotIcon },
+      { href: "/alerts", label: "Push Alerts Dispatch", icon: FlagIcon, roles: ["admin"] },
+      { href: "/copilot", label: "AI Copilot", icon: BotIcon, roles: ["admin"] },
     ],
   },
 ];
 
+const roleLabel: Record<Role, string> = {
+  admin: "Administrator",
+  medical: "Medical Practitioner",
+};
+
 export function AppSidebar() {
   const pathname = usePathname();
+  const { user, role, signOut } = useAuth();
+
+  const visibleGroups = useMemo(() => {
+    return navGroups
+      .map((group) => ({
+        ...group,
+        items: group.items.filter(
+          (item) => !item.roles || (role && item.roles.includes(role)),
+        ),
+      }))
+      .filter((group) => group.items.length > 0);
+  }, [role]);
 
   return (
     <Sidebar variant="inset" collapsible="icon">
@@ -98,7 +119,7 @@ export function AppSidebar() {
         </SidebarMenu>
       </SidebarHeader>
       <SidebarContent>
-        {navGroups.map((group) => (
+        {visibleGroups.map((group) => (
           <SidebarGroup key={group.label}>
             <SidebarGroupLabel>{group.label}</SidebarGroupLabel>
             <SidebarGroupContent>
@@ -132,6 +153,17 @@ export function AppSidebar() {
             <ThemeToggle />
           </SidebarMenuItem>
         </SidebarMenu>
+        <div className="flex items-center justify-between gap-2 border-t px-2 py-2">
+          <div className="min-w-0">
+            <p className="truncate text-sm font-medium">{user?.email}</p>
+            <p className="text-xs text-muted-foreground">
+              {role ? roleLabel[role] : "Signed in"}
+            </p>
+          </div>
+          <Button variant="ghost" size="sm" onClick={signOut}>
+            Sign out
+          </Button>
+        </div>
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>

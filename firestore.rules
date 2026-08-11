@@ -1,0 +1,89 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // ---- Helpers ----
+    function signedIn() {
+      return request.auth != null;
+    }
+    function isAdmin() {
+      return signedIn() && request.auth.token.role == 'admin';
+    }
+    function isMedical() {
+      return signedIn() && request.auth.token.role == 'medical';
+    }
+    function isStaff() {
+      return isAdmin() || isMedical();
+    }
+    function isOwner(uid) {
+      return signedIn() && request.auth.uid == uid;
+    }
+    // Mobile end-users bump likes/saved on content; only those fields.
+    function onlyLikesSaves() {
+      return signedIn()
+        && request.resource.data.diff(resource.data)
+             .affectedKeys().hasOnly(['likes', 'saved']);
+    }
+
+    // ---- CMS content (tier: end-user reads, staff writes) ----
+    match /articles/{id} {
+      allow read: if signedIn();
+      allow create, delete: if isStaff();
+      allow update: if isStaff() || onlyLikesSaves();
+    }
+    match /podcasts/{id} {
+      allow read: if signedIn();
+      allow create, update, delete: if isStaff();
+    }
+    match /videos/{id} {
+      allow read: if signedIn();
+      allow create, delete: if isStaff();
+      allow update: if isStaff() || onlyLikesSaves();
+    }
+
+    // ---- Doctors registry (tier: end-user + medical read, admin write) ----
+    match /doctors/{id} {
+      allow read: if signedIn();
+      allow create, update, delete: if isAdmin();
+    }
+
+    // ---- Appointments (tier: owner CRUD, staff read/update) ----
+    match /appointments/{id} {
+      allow read: if isStaff() || isOwner(resource.data.userId);
+      allow create: if isOwner(request.resource.data.userId);
+      allow update: if isStaff() || isOwner(resource.data.userId);
+      allow delete: if isOwner(resource.data.userId);
+    }
+
+    // ---- Community feed (tier: authed read/create, author update, admin moderation) ----
+    match /posts/{id} {
+      allow read: if signedIn();
+      allow create: if signedIn();
+      allow update: if isAdmin() || isOwner(resource.data.authorId);
+      allow delete: if isAdmin() || isOwner(resource.data.authorId);
+    }
+
+    // ---- Profiles (tier: read for authed, owner/admin writes) ----
+    match /users/{uid} {
+      allow read: if signedIn();
+      allow write: if isOwner(uid) || isAdmin();
+    }
+
+    // ---- Community/social ----
+    match /groups/{id} {
+      allow read: if signedIn();
+      allow write: if signedIn();
+    }
+    match /friendRequests/{id} {
+      allow read: if signedIn();
+      allow write: if signedIn();
+    }
+
+    // ---- Admin-only CMS surfaces ----
+    match /notifications/{id} {
+      allow read, write: if isAdmin();
+    }
+    match /config/{id} {
+      allow read, write: if isAdmin();
+    }
+  }
+}

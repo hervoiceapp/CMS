@@ -12,6 +12,7 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import { useCollection } from "@/hooks/use-collection";
+import { useAuth } from "@/components/auth-provider";
 import type { Article, Appointment, Podcast, Post } from "@/lib/types";
 import { formatDate, normalizePost } from "@/lib/types";
 import { Button } from "@/components/ui/button";
@@ -90,6 +91,8 @@ const statusColor: Record<string, string> = {
 };
 
 export default function DashboardPage() {
+  const { role } = useAuth();
+  const isAdmin = role === "admin";
   const { data: appointments, loading: loadingAppointments } =
     useCollection<Appointment>("appointments");
   const { data: articles, loading: loadingArticles } =
@@ -169,13 +172,15 @@ export default function DashboardPage() {
             icon={PodcastIcon}
             className="bg-amber-500/10 text-amber-600"
           />
-          <StatCard
-            title="Community Posts"
-            value={posts.length}
-            subtext="Live user-submitted posts"
-            icon={BubbleChatIcon}
-            className="bg-rose-500/10 text-rose-600"
-          />
+          {isAdmin && (
+            <StatCard
+              title="Community Posts"
+              value={posts.length}
+              subtext="Live user-submitted posts"
+              icon={BubbleChatIcon}
+              className="bg-rose-500/10 text-rose-600"
+            />
+          )}
         </div>
       )}
 
@@ -212,40 +217,42 @@ export default function DashboardPage() {
           )}
         </ActionQueueCard>
 
-        <ActionQueueCard title="Latest Community Posts" icon={BubbleChatIcon}>
-          {recentPosts.length === 0 ? (
-            <p className="rounded-xl border border-dashed p-8 text-center text-xs text-muted-foreground">
-              No posts yet from the community.
-            </p>
-          ) : (
-            <div className="space-y-4">
-              {recentPosts.map((post) => (
-                <div
-                  key={post.id}
-                  className="rounded-xl border bg-muted/30 p-4 space-y-2"
-                >
-                  <div className="flex items-start justify-between gap-2">
-                    <h4 className="text-sm font-bold">
-                      {post.authorName || "Community Member"}
-                    </h4>
-                    <span className="text-xs text-muted-foreground">
-                      {formatDate(post.createdAt)}
-                    </span>
+        {isAdmin && (
+          <ActionQueueCard title="Latest Community Posts" icon={BubbleChatIcon}>
+            {recentPosts.length === 0 ? (
+              <p className="rounded-xl border border-dashed p-8 text-center text-xs text-muted-foreground">
+                No posts yet from the community.
+              </p>
+            ) : (
+              <div className="space-y-4">
+                {recentPosts.map((post) => (
+                  <div
+                    key={post.id}
+                    className="rounded-xl border bg-muted/30 p-4 space-y-2"
+                  >
+                    <div className="flex items-start justify-between gap-2">
+                      <h4 className="text-sm font-bold">
+                        {post.authorName || "Community Member"}
+                      </h4>
+                      <span className="text-xs text-muted-foreground">
+                        {formatDate(post.createdAt)}
+                      </span>
+                    </div>
+                    <p className="text-xs italic text-muted-foreground leading-relaxed">
+                      &ldquo;{post.content || "No content"}&rdquo;
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                      {post.likes ?? 0} likes • {post.comments ?? 0} comments
+                    </p>
+                    <Button variant="outline" size="sm" nativeButton={false} render={<Link href="/feed" />}>
+                      View Community Feed
+                    </Button>
                   </div>
-                  <p className="text-xs italic text-muted-foreground leading-relaxed">
-                    &ldquo;{post.content || "No content"}&rdquo;
-                  </p>
-                  <p className="text-xs text-muted-foreground">
-                    {post.likes ?? 0} likes • {post.comments ?? 0} comments
-                  </p>
-                  <Button variant="outline" size="sm" nativeButton={false} render={<Link href="/feed" />}>
-                    View Community Feed
-                  </Button>
-                </div>
-              ))}
-            </div>
-          )}
-        </ActionQueueCard>
+                ))}
+              </div>
+            )}
+          </ActionQueueCard>
+        )}
       </div>
 
       <div className="grid grid-cols-1 gap-6 xl:grid-cols-2">
