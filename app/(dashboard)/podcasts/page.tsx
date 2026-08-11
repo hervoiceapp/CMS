@@ -217,7 +217,7 @@ export default function PodcastsPage() {
     <div className="space-y-6">
       <PageHeader
         title="Podcast Studio"
-        description="Upload, schedule, and manage audio support tracks"
+        description="Upload, manage, and publish audio support tracks"
         action={
           <Button onClick={openCreate}>
             <HugeiconsIcon icon={PlusSignIcon} />

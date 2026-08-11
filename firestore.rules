@@ -5,9 +5,8 @@ rules_version = '2';
 //
 // Model:
 //  - `users/{uid}` access is limited to the owner. The mobile community screen
-//    reads the whole `users` collection in the app today; that is a known
-//    design flaw being fixed. Until the app is updated to read "members"
-//    without PII, unauthenticated reads are denied here.
+//    reads the PII-safe `members` collection for "nearby members"; full
+//    `users` docs never leave the owner.
 //  - Public content collections (articles, podcasts, videos, doctors, groups,
 //    posts, notifications) are readable by any authenticated user of the app.
 //  - Only the CMS admin/medical users (Firebase custom claim role) may write
@@ -111,11 +110,10 @@ service cloud.firestore {
       allow delete, update: if isSignedIn();
     }
 
-    // ---------- Community member search (PII-safe proxy) ----------
-    // NOTE: The mobile app currently reads `users` to power "nearby members".
-    // That exposes full PII. The preferred approach is a curated
-    // `members/{uid}` collection containing only display fields (name, area,
-    // avatar) instead of reading `users`. Rules below allow reading `members`.
+    // ---------- Community member search (PII-safe) ----------
+    // The mobile app reads `members/{uid}` (display fields only: name,
+    // language, color) to power "nearby members". Users publish their own
+    // member profile on save; the CMS backfills it from `users` on demand.
     match /members/{uid} {
       allow read: if isSignedIn();
       allow write: if isOwner(uid);
