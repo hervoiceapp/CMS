@@ -31,6 +31,7 @@ import {
   CalendarCheckIcon,
   FlagIcon,
   BotIcon,
+  Settings01Icon,
 } from "@hugeicons/core-free-icons";
 
 interface NavItem {
@@ -75,6 +76,7 @@ const navGroups: NavGroup[] = [
     items: [
       { href: "/alerts", label: "Push Alerts Dispatch", icon: FlagIcon, roles: ["admin"] },
       { href: "/copilot", label: "AI Copilot", icon: BotIcon, roles: ["admin"] },
+      { href: "/settings", label: "App Settings", icon: Settings01Icon, roles: ["admin"] },
     ],
   },
 ];

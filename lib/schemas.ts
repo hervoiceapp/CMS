@@ -84,3 +84,14 @@ export const aiCopilotSchema = z.object({
 });
 
 export type AiCopilotForm = z.infer<typeof aiCopilotSchema>;
+
+export const appConfigSchema = z.object({
+  minVersion: z.string().min(1, "Minimum version is required"),
+  forceUpdateBelow: z
+    .string()
+    .regex(/^\d+\.\d+\.\d+$/, "Must be a semver like 1.2.3"),
+  maintenanceMode: z.boolean(),
+  maintenanceMessage: z.string().optional(),
+});
+
+export type AppConfigForm = z.infer<typeof appConfigSchema>;

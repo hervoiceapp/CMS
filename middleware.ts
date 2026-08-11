@@ -6,7 +6,7 @@ export const runtime = "nodejs";
 const DASHBOARD_PREFIX = "/";
 
 // Public routes that never require a session.
-const PUBLIC_PATHS = ["/login", "/favicon.ico"];
+const PUBLIC_PATHS = ["/login", "/privacy", "/terms", "/favicon.ico"];
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;

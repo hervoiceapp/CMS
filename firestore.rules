@@ -119,6 +119,15 @@ service cloud.firestore {
       allow write: if isOwner(uid);
     }
 
+    // ---------- Analytics events ----------
+    // The app appends one event per key action; the CMS reads them for
+    // product analytics. Events are append-only (no update/delete by users).
+    match /analytics_events/{id} {
+      allow read: if isCmsAdmin();
+      allow create: if isSignedIn();
+      allow update, delete: if isCmsAdmin();
+    }
+
     // ---------- CMS config singleton ----------
     match /config/{docId} {
       // The app reads the AI copilot config on chat start.

@@ -171,3 +171,12 @@ export interface AiCopilotConfig {
   updatedAt?: Timestamp | Date | number;
   updatedBy?: string;
 }
+
+export interface AppConfig {
+  minVersion: string;
+  forceUpdateBelow: string;
+  maintenanceMode: boolean;
+  maintenanceMessage: string;
+  updatedAt?: Timestamp | Date | number;
+  updatedBy?: string;
+}
