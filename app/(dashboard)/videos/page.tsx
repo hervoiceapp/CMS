@@ -3,7 +3,7 @@
 import { useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { addDoc, collection, deleteDoc, doc, updateDoc } from "firebase/firestore";
+import { addDoc, collection, deleteDoc, doc, updateDoc, serverTimestamp } from "firebase/firestore";
 import type { ColumnDef } from "@tanstack/react-table";
 
 import { db } from "@/lib/firebase";
@@ -89,10 +89,16 @@ export default function VideosPage() {
     setSubmitting(true);
     try {
       if (editing) {
-        await updateDoc(doc(db, "videos", editing.id), values);
+        await updateDoc(doc(db, "videos", editing.id), {
+          ...values,
+          createdAt: editing.createdAt ?? serverTimestamp(),
+        });
         toast.add({ title: "Video updated", type: "success" });
       } else {
-        await addDoc(collection(db, "videos"), values);
+        await addDoc(collection(db, "videos"), {
+          ...values,
+          createdAt: serverTimestamp(),
+        });
         toast.add({ title: "Video uploaded", type: "success" });
       }
       setModalOpen(false);

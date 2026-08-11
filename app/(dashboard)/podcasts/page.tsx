@@ -3,7 +3,7 @@
 import { useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { addDoc, collection, deleteDoc, doc, updateDoc } from "firebase/firestore";
+import { addDoc, collection, deleteDoc, doc, updateDoc, serverTimestamp } from "firebase/firestore";
 import type { ColumnDef } from "@tanstack/react-table";
 
 import { db } from "@/lib/firebase";
@@ -87,10 +87,16 @@ export default function PodcastsPage() {
     setSubmitting(true);
     try {
       if (editing) {
-        await updateDoc(doc(db, "podcasts", editing.id), values);
+        await updateDoc(doc(db, "podcasts", editing.id), {
+          ...values,
+          createdAt: editing.createdAt ?? serverTimestamp(),
+        });
         toast.add({ title: "Podcast updated", type: "success" });
       } else {
-        await addDoc(collection(db, "podcasts"), values);
+        await addDoc(collection(db, "podcasts"), {
+          ...values,
+          createdAt: serverTimestamp(),
+        });
         toast.add({ title: "Podcast uploaded", type: "success" });
       }
       setModalOpen(false);
