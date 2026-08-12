@@ -130,8 +130,9 @@ service cloud.firestore {
 
     // ---------- CMS config singleton ----------
     match /config/{docId} {
-      // The app reads the AI copilot config on chat start.
-      allow read: if isSignedIn();
+      // Public read: the app checks maintenance/forced-update flags on
+      // launch, before the user signs in. Contains no sensitive data.
+      allow read: if true;
       // Only CMS staff may write config.
       allow write: if isCmsAdmin();
     }
