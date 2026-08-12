@@ -64,6 +64,18 @@ export const doctorSchema = z.object({
 
 export type DoctorForm = z.infer<typeof doctorSchema>;
 
+export const motivationSchema = z.object({
+  text: z.string().min(1, "Message is required"),
+  date: z
+    .string()
+    .regex(/^\d{4}-\d{2}-\d{2}$/, "Use YYYY-MM-DD or leave blank")
+    .optional()
+    .or(z.literal("")),
+  trackId: z.string().optional(),
+});
+
+export type MotivationForm = z.infer<typeof motivationSchema>;
+
 export const alertSchema = z.object({
   title: z.string().min(1, "Title is required"),
   body: z.string().min(1, "Message body is required"),

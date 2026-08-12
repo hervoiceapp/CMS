@@ -32,6 +32,8 @@ import {
   FlagIcon,
   BotIcon,
   Settings01Icon,
+  SunriseIcon,
+  FileValidationIcon,
 } from "@hugeicons/core-free-icons";
 
 interface NavItem {
@@ -62,7 +64,11 @@ const navGroups: NavGroup[] = [
   },
   {
     label: "Community & Support",
-    items: [{ href: "/feed", label: "Social Feed", icon: UserMultipleIcon, roles: ["admin"] }],
+    items: [
+      { href: "/feed", label: "Social Feed", icon: UserMultipleIcon, roles: ["admin"] },
+      { href: "/motivations", label: "Daily Motivations", icon: SunriseIcon, roles: ["admin"] },
+      { href: "/screenings", label: "Screening Results", icon: FileValidationIcon, roles: ["admin"] },
+    ],
   },
   {
     label: "Clinical Providers",

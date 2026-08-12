@@ -127,6 +127,32 @@ export interface Appointment {
   userId: string;
 }
 
+export interface DailyMotivation {
+  id: string;
+  text: string;
+  date?: string;
+  trackId?: string;
+  status?: ContentStatus;
+  publishedAt?: Timestamp | Date | number;
+}
+
+export interface ScreeningAnswer {
+  text: string;
+  answer: number;
+  score: number;
+}
+
+export interface ScreeningResult {
+  id: string;
+  userId?: string;
+  userName?: string;
+  answers?: ScreeningAnswer[];
+  totalScore?: number;
+  severity?: string;
+  recommendation?: string;
+  timestamp?: Timestamp | Date | number;
+}
+
 export interface Notification {
   id: string;
   title: string;
@@ -162,6 +188,26 @@ export function formatDate(createdAt: unknown): string {
   });
 }
 
+export function formatDateTime(createdAt: unknown): string {
+  if (!createdAt) return "";
+  const date =
+    isTimestampLike(createdAt) || typeof createdAt === "number"
+      ? new Date(
+          isTimestampLike(createdAt) ? createdAt.seconds * 1000 : createdAt,
+        )
+      : createdAt instanceof Date
+        ? createdAt
+        : new Date(createdAt as string | number);
+  if (isNaN(date.getTime())) return "";
+  return date.toLocaleString(undefined, {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+    hour: "numeric",
+    minute: "2-digit",
+  });
+}
+
 export interface AiCopilotConfig {
   model: string;
   systemInstruction: string;
@@ -177,6 +223,7 @@ export interface AppConfig {
   forceUpdateBelow: string;
   maintenanceMode: boolean;
   maintenanceMessage: string;
+  storeUrl?: string;
   updatedAt?: Timestamp | Date | number;
   updatedBy?: string;
 }
