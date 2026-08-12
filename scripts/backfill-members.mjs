@@ -30,9 +30,7 @@ function loadServiceAccount() {
     const match = raw.match(/^FIREBASE_SERVICE_ACCOUNT=(.*)$/m);
     if (match) return match[1].replace(/^["']|["']$/g, "").trim();
   }
-  throw new Error(
-    "Missing FIREBASE_SERVICE_ACCOUNT. Set it as an env var or in .env.local.",
-  );
+  throw new Error("Missing FIREBASE_SERVICE_ACCOUNT. Set it as an env var or in .env.local.");
 }
 
 const serviceAccount = loadServiceAccount();
@@ -52,9 +50,7 @@ function sanitize(data) {
         ? data.fullName.trim()
         : "Community Member",
     preferredLanguage:
-      typeof data.preferredLanguage === "string"
-        ? data.preferredLanguage
-        : "English",
+      typeof data.preferredLanguage === "string" ? data.preferredLanguage : "English",
     imageColor: "#86efac",
     updatedAt: new Date(),
   };
@@ -74,9 +70,7 @@ async function main() {
     const snap = await db.collection("users").doc(user.uid).get();
     if (!snap.exists) throw new Error(`No users/{uid} doc for ${emailFilter}`);
     const result = await backfillOne(user.uid, snap.data());
-    console.log(
-      `Created members/${result.uid} for ${emailFilter} (${result.fullName})`,
-    );
+    console.log(`Created members/${result.uid} for ${emailFilter} (${result.fullName})`);
     return;
   }
 

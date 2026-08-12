@@ -62,12 +62,7 @@ export function DropZone({
   // asynchronously-loaded edit data (gs:// URIs) just works without an effect.
   const imageSrc =
     !isAudio && !isVideo
-      ? preview ??
-        (value
-          ? value.startsWith("gs://")
-            ? gsToHttps(value)
-            : value
-          : null)
+      ? (preview ?? (value ? (value.startsWith("gs://") ? gsToHttps(value) : value) : null))
       : null;
 
   const extractMediaDuration = useCallback(
@@ -130,9 +125,7 @@ export function DropZone({
       setUploading(true);
       setProgress(0);
       try {
-        const { gsUrl, httpsUrl } = await uploadFile(file, pathPrefix, (pct) =>
-          setProgress(pct),
-        );
+        const { gsUrl, httpsUrl } = await uploadFile(file, pathPrefix, (pct) => setProgress(pct));
         setPreview(httpsUrl);
         onChange(gsUrl, httpsUrl);
         onUploadComplete?.(gsUrl);
@@ -184,11 +177,7 @@ export function DropZone({
   };
 
   const hasMedia = !!value && (isAudio || isVideo);
-  const mediaSrc = value
-    ? value.startsWith("gs://")
-      ? gsToHttps(value)
-      : value
-    : "";
+  const mediaSrc = value ? (value.startsWith("gs://") ? gsToHttps(value) : value) : "";
 
   return (
     <div className="space-y-2">
@@ -226,10 +215,7 @@ export function DropZone({
             </div>
           </div>
         ) : hasMedia ? (
-          <div
-            className="w-full space-y-3"
-            onClick={(e) => e.stopPropagation()}
-          >
+          <div className="w-full space-y-3" onClick={(e) => e.stopPropagation()}>
             <div className="flex items-center gap-2">
               <HugeiconsIcon
                 icon={isAudio ? FileAudioIcon : FileVideoIcon}
@@ -250,11 +236,7 @@ export function DropZone({
             {isAudio ? (
               <audio controls src={mediaSrc} className="w-full" />
             ) : (
-              <video
-                controls
-                src={mediaSrc}
-                className="max-h-44 w-full rounded-xl bg-black"
-              />
+              <video controls src={mediaSrc} className="max-h-44 w-full rounded-xl bg-black" />
             )}
             <p className="text-center text-xs text-muted-foreground/70">
               Drop a new file or click to replace
@@ -263,11 +245,7 @@ export function DropZone({
         ) : imageSrc ? (
           <div className="relative w-full max-w-[200px]">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={imageSrc}
-              alt="Preview"
-              className="h-32 w-full rounded-xl object-cover"
-            />
+            <img src={imageSrc} alt="Preview" className="h-32 w-full rounded-xl object-cover" />
             <button
               type="button"
               onClick={handleRemove}
@@ -284,12 +262,9 @@ export function DropZone({
               className="size-10"
             />
             <span className="text-sm font-medium">
-              Drop {isAudio ? "audio" : isVideo ? "video" : "image"} here or
-              click to browse
+              Drop {isAudio ? "audio" : isVideo ? "video" : "image"} here or click to browse
             </span>
-            <span className="text-xs text-muted-foreground/70">
-              Max {maxSizeMB}MB
-            </span>
+            <span className="text-xs text-muted-foreground/70">Max {maxSizeMB}MB</span>
           </div>
         )}
         <input

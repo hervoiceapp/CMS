@@ -145,8 +145,8 @@ export function ArticleEditor({ articleId }: { articleId?: string }) {
           ...payload,
           createdAt: editing.createdAt,
           publishedAt: publish
-            ? editing.publishedAt ?? new Date()
-            : editing.publishedAt ?? null,
+            ? (editing.publishedAt ?? new Date())
+            : (editing.publishedAt ?? null),
         });
         toast.add({ title: publish ? "Article published" : "Draft saved", type: "success" });
       } else {
@@ -274,9 +274,7 @@ export function ArticleEditor({ articleId }: { articleId?: string }) {
             aria-invalid={!!form.formState.errors.title}
           />
           {form.formState.errors.title && (
-            <p className="text-xs text-destructive">
-              {form.formState.errors.title.message}
-            </p>
+            <p className="text-xs text-destructive">{form.formState.errors.title.message}</p>
           )}
         </div>
 
@@ -290,18 +288,12 @@ export function ArticleEditor({ articleId }: { articleId?: string }) {
               aria-invalid={!!form.formState.errors.author}
             />
             {form.formState.errors.author && (
-              <p className="text-xs text-destructive">
-                {form.formState.errors.author.message}
-              </p>
+              <p className="text-xs text-destructive">{form.formState.errors.author.message}</p>
             )}
           </div>
           <div className="space-y-2">
             <Label htmlFor="article-category">Category</Label>
-            <NativeSelect
-              id="article-category"
-              className="w-full"
-              {...form.register("category")}
-            >
+            <NativeSelect id="article-category" className="w-full" {...form.register("category")}>
               {ARTICLE_CATEGORIES.map((category) => (
                 <NativeSelectOption key={category} value={category}>
                   {category.charAt(0).toUpperCase() + category.slice(1)}
@@ -327,9 +319,7 @@ export function ArticleEditor({ articleId }: { articleId?: string }) {
             onChange={(html) => form.setValue("content", html)}
           />
           {form.formState.errors.content && (
-            <p className="text-xs text-destructive">
-              {form.formState.errors.content.message}
-            </p>
+            <p className="text-xs text-destructive">{form.formState.errors.content.message}</p>
           )}
         </div>
 
@@ -344,11 +334,7 @@ export function ArticleEditor({ articleId }: { articleId?: string }) {
             </Button>
           )}
           <div className="flex gap-3">
-            <Button
-              variant="outline"
-              disabled={saving}
-              onClick={() => save(false)}
-            >
+            <Button variant="outline" disabled={saving} onClick={() => save(false)}>
               <HugeiconsIcon icon={SaveIcon} />
               {saving ? "Saving..." : "Save Draft"}
             </Button>

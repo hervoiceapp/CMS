@@ -27,9 +27,7 @@ function loadServiceAccount() {
     const match = raw.match(/^FIREBASE_SERVICE_ACCOUNT=(.*)$/m);
     if (match) return match[1].replace(/^["']|["']$/g, "").trim();
   }
-  throw new Error(
-    "Missing FIREBASE_SERVICE_ACCOUNT. Set it as an env var or in .env.local.",
-  );
+  throw new Error("Missing FIREBASE_SERVICE_ACCOUNT. Set it as an env var or in .env.local.");
 }
 
 const serviceAccount = loadServiceAccount();

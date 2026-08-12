@@ -1,10 +1,5 @@
 import { z } from "zod";
-import {
-  ARTICLE_CATEGORIES,
-  DOCTOR_TITLES,
-  VIDEO_CATEGORIES,
-  AI_MODELS,
-} from "./constants";
+import { ARTICLE_CATEGORIES, DOCTOR_TITLES, VIDEO_CATEGORIES, AI_MODELS } from "./constants";
 
 export const CONTENT_STATUSES = ["draft", "published"] as const;
 export type ContentStatusValue = (typeof CONTENT_STATUSES)[number];
@@ -85,31 +80,20 @@ export type AlertForm = z.infer<typeof alertSchema>;
 
 export const aiCopilotSchema = z.object({
   model: z.enum(AI_MODELS),
-  systemInstruction: z
-    .string()
-    .min(1, "System instruction is required"),
+  systemInstruction: z.string().min(1, "System instruction is required"),
   crisisDirective: z.string().optional(),
   temperature: z.number().min(0, "Temperature must be at least 0").max(2),
-  maxOutputTokens: z
-    .number()
-    .min(1, "Must be a positive whole number")
-    .max(65536),
+  maxOutputTokens: z.number().min(1, "Must be a positive whole number").max(65536),
 });
 
 export type AiCopilotForm = z.infer<typeof aiCopilotSchema>;
 
 export const appConfigSchema = z.object({
   minVersion: z.string().min(1, "Minimum version is required"),
-  forceUpdateBelow: z
-    .string()
-    .regex(/^\d+\.\d+\.\d+$/, "Must be a semver like 1.2.3"),
+  forceUpdateBelow: z.string().regex(/^\d+\.\d+\.\d+$/, "Must be a semver like 1.2.3"),
   maintenanceMode: z.boolean(),
   maintenanceMessage: z.string().optional(),
-  storeUrl: z
-    .string()
-    .url("Must be a valid store link")
-    .optional()
-    .or(z.literal("")),
+  storeUrl: z.string().url("Must be a valid store link").optional().or(z.literal("")),
 });
 
 export type AppConfigForm = z.infer<typeof appConfigSchema>;

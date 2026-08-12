@@ -47,15 +47,8 @@ const SVGComponent = (props: SVGProps<SVGSVGElement>) => (
         />
         <feOffset dy={3.62415} />
         <feGaussianBlur stdDeviation={4.8322} />
-        <feColorMatrix
-          type="matrix"
-          values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.1 0"
-        />
-        <feBlend
-          mode="normal"
-          in2="BackgroundImageFix"
-          result="effect1_dropShadow_570_3390"
-        />
+        <feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.1 0" />
+        <feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_570_3390" />
         <feBlend
           mode="normal"
           in="SourceGraphic"
@@ -63,16 +56,8 @@ const SVGComponent = (props: SVGProps<SVGSVGElement>) => (
           result="shape"
         />
       </filter>
-      <pattern
-        id="pattern0_570_3390"
-        patternContentUnits="objectBoundingBox"
-        width={1}
-        height={1}
-      >
-        <use
-          xlinkHref="#image0_570_3390"
-          transform="scale(0.00204499 0.00161031)"
-        />
+      <pattern id="pattern0_570_3390" patternContentUnits="objectBoundingBox" width={1} height={1}>
+        <use xlinkHref="#image0_570_3390" transform="scale(0.00204499 0.00161031)" />
       </pattern>
       <image
         id="image0_570_3390"

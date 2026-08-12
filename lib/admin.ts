@@ -19,9 +19,7 @@ function getAdminAuth() {
   try {
     credential = cert(JSON.parse(serviceAccount));
   } catch {
-    throw new Error(
-      "FIREBASE_SERVICE_ACCOUNT must be valid stringified service-account JSON.",
-    );
+    throw new Error("FIREBASE_SERVICE_ACCOUNT must be valid stringified service-account JSON.");
   }
 
   const app =

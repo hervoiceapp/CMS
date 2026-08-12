@@ -1,8 +1,4 @@
-export const ARTICLE_CATEGORIES = [
-  "educational",
-  "mental health",
-  "postnatal guidance",
-] as const;
+export const ARTICLE_CATEGORIES = ["educational", "mental health", "postnatal guidance"] as const;
 
 // No-cover fallback color for article cards (picked by the editor).
 export const ARTICLE_COLORS = [
@@ -15,11 +11,7 @@ export const ARTICLE_COLORS = [
   "#C7D2FE",
 ] as const;
 
-export const VIDEO_CATEGORIES = [
-  "Therapy Guide",
-  "Somatic Exercises",
-  "Meditation",
-] as const;
+export const VIDEO_CATEGORIES = ["Therapy Guide", "Somatic Exercises", "Meditation"] as const;
 
 export const DOCTOR_TITLES = [
   "Psychiatric Nurse",
@@ -41,11 +33,7 @@ export const DOCTOR_COLORS = [
 
 export const APPOINTMENT_STATUSES = ["pending", "confirmed", "declined"] as const;
 
-export const AI_MODELS = [
-  "gemini-3.6-flash",
-  "gemini-3.5-flash",
-  "gemini-3.5-flash-lite",
-] as const;
+export const AI_MODELS = ["gemini-3.6-flash", "gemini-3.5-flash", "gemini-3.5-flash-lite"] as const;
 
 export const DEFAULT_COPILOT_CONFIG = {
   systemInstruction:

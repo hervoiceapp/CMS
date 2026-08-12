@@ -3,14 +3,7 @@
 import { useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import {
-  addDoc,
-  collection,
-  deleteDoc,
-  doc,
-  updateDoc,
-  serverTimestamp,
-} from "firebase/firestore";
+import { addDoc, collection, deleteDoc, doc, updateDoc, serverTimestamp } from "firebase/firestore";
 import type { ColumnDef } from "@tanstack/react-table";
 
 import { db } from "@/lib/firebase";
@@ -25,10 +18,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import {
-  NativeSelect,
-  NativeSelectOption,
-} from "@/components/ui/native-select";
+import { NativeSelect, NativeSelectOption } from "@/components/ui/native-select";
 import {
   Dialog,
   DialogContent,
@@ -44,17 +34,13 @@ import { SunriseIcon, PlusSignIcon } from "@hugeicons/core-free-icons";
 const DEFAULT_DATE = new Date().toISOString().slice(0, 10);
 
 export default function MotivationsPage() {
-  const { data: motivations, loading, error } = useCollection<DailyMotivation>(
-    "daily_motivations",
+  const { data: motivations, loading, error } = useCollection<DailyMotivation>("daily_motivations");
+  const { data: podcasts } = useCollection<{ id: string; title: string } & Record<string, unknown>>(
+    "podcasts",
   );
-  const { data: podcasts } = useCollection<
-    { id: string; title: string } & Record<string, unknown>
-  >("podcasts");
   const [modalOpen, setModalOpen] = useState(false);
   const [editing, setEditing] = useState<DailyMotivation | null>(null);
-  const [deleteTarget, setDeleteTarget] = useState<DailyMotivation | null>(
-    null,
-  );
+  const [deleteTarget, setDeleteTarget] = useState<DailyMotivation | null>(null);
   const [submitting, setSubmitting] = useState(false);
 
   const form = useForm<MotivationForm>({
@@ -127,9 +113,7 @@ export default function MotivationsPage() {
         header: "Message",
         cell: ({ row }) => (
           <p className="line-clamp-2 max-w-lg text-sm">
-            {row.original.text || (
-              <span className="text-muted-foreground">No message</span>
-            )}
+            {row.original.text || <span className="text-muted-foreground">No message</span>}
           </p>
         ),
       },
@@ -161,13 +145,8 @@ export default function MotivationsPage() {
         cell: ({ getValue }) =>
           (() => {
             if (!getValue()) return "";
-            const v = getValue() as
-              | { seconds: number }
-              | Date
-              | number
-              | string;
-            const ms =
-              typeof v === "object" && "seconds" in v ? v.seconds * 1000 : v;
+            const v = getValue() as { seconds: number } | Date | number | string;
+            const ms = typeof v === "object" && "seconds" in v ? v.seconds * 1000 : v;
             return new Date(ms as number).toLocaleDateString();
           })(),
       },
@@ -205,20 +184,13 @@ export default function MotivationsPage() {
       <Dialog open={modalOpen} onOpenChange={setModalOpen}>
         <DialogContent className="sm:max-w-lg">
           <DialogHeader>
-            <DialogTitle>
-              {editing ? "Edit Motivation" : "New Motivation"}
-            </DialogTitle>
+            <DialogTitle>{editing ? "Edit Motivation" : "New Motivation"}</DialogTitle>
             <DialogDescription>
-              The app picks today&#39;s message, then the most recent default
-              one.
+              The app picks today&#39;s message, then the most recent default one.
             </DialogDescription>
           </DialogHeader>
 
-          <form
-            onSubmit={form.handleSubmit(onSubmit)}
-            className="space-y-4"
-            id="motivation-form"
-          >
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4" id="motivation-form">
             <div className="space-y-2">
               <div className="flex items-center gap-2">
                 <HugeiconsIcon icon={SunriseIcon} className="size-4 text-muted-foreground" />
@@ -231,27 +203,18 @@ export default function MotivationsPage() {
                 {...form.register("text")}
               />
               {form.formState.errors.text && (
-                <p className="text-xs text-destructive">
-                  {form.formState.errors.text.message}
-                </p>
+                <p className="text-xs text-destructive">{form.formState.errors.text.message}</p>
               )}
             </div>
 
             <div className="space-y-2">
               <Label htmlFor="motivation-date">Target Day (optional)</Label>
-              <Input
-                id="motivation-date"
-                type="date"
-                {...form.register("date")}
-              />
+              <Input id="motivation-date" type="date" {...form.register("date")} />
               {form.formState.errors.date && (
-                <p className="text-xs text-destructive">
-                  {form.formState.errors.date.message}
-                </p>
+                <p className="text-xs text-destructive">{form.formState.errors.date.message}</p>
               )}
               <p className="text-xs text-muted-foreground">
-                Leave blank to show this message on any day that has no dated
-                one.
+                Leave blank to show this message on any day that has no dated one.
               </p>
             </div>
 

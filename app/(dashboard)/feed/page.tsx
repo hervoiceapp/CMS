@@ -16,9 +16,7 @@ import { Badge } from "@/components/ui/badge";
 import { toast } from "@/components/ui/toast";
 
 export default function FeedPage() {
-  const { data, loading, error } = useCollection<
-    Record<string, unknown> & { id: string }
-  >("posts");
+  const { data, loading, error } = useCollection<Record<string, unknown> & { id: string }>("posts");
   const [deleteTarget, setDeleteTarget] = useState<Post | null>(null);
 
   const posts = useMemo(() => data.map((raw) => normalizePost(raw)), [data]);
@@ -53,16 +51,10 @@ export default function FeedPage() {
             <div className="flex items-start gap-3">
               {src && (
                 // eslint-disable-next-line @next/next/no-img-element
-                <img
-                  src={src}
-                  alt=""
-                  className="size-11 shrink-0 rounded-lg object-cover"
-                />
+                <img src={src} alt="" className="size-11 shrink-0 rounded-lg object-cover" />
               )}
               <p className="line-clamp-2 max-w-md text-sm">
-                {text || (
-                  <span className="text-muted-foreground">No content</span>
-                )}
+                {text || <span className="text-muted-foreground">No content</span>}
               </p>
             </div>
           );
@@ -101,10 +93,7 @@ export default function FeedPage() {
 
   return (
     <div className="space-y-6">
-      <PageHeader
-        title="Community Feed"
-        description="Review user-submitted posts"
-      />
+      <PageHeader title="Community Feed" description="Review user-submitted posts" />
 
       <div className="flex flex-wrap items-center gap-2">
         <Badge variant="secondary">{posts.length} total posts</Badge>

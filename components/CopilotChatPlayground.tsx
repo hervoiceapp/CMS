@@ -19,11 +19,7 @@ interface Message {
   streaming?: boolean;
 }
 
-export function CopilotChatPlayground({
-  config,
-}: {
-  config: AiCopilotConfig;
-}) {
+export function CopilotChatPlayground({ config }: { config: AiCopilotConfig }) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [sending, setSending] = useState(false);
@@ -135,27 +131,19 @@ export function CopilotChatPlayground({
           <HugeiconsIcon icon={Robot01Icon} className="size-4 text-primary" />
           Test Playground
         </CardTitle>
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={resetChat}
-          disabled={sending || empty}
-        >
+        <Button variant="ghost" size="sm" onClick={resetChat} disabled={sending || empty}>
           <HugeiconsIcon icon={RefreshIcon} />
           Reset conversation
         </Button>
       </CardHeader>
       <CardContent className="flex min-h-[24rem] flex-1 flex-col gap-4">
-        <div
-          ref={scrollRef}
-          className="flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto pr-1"
-        >
+        <div ref={scrollRef} className="flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto pr-1">
           {empty && (
             <div className="flex h-full flex-col items-center justify-center gap-2 text-center text-muted-foreground">
               <HugeiconsIcon icon={Robot01Icon} className="size-8" />
               <p className="max-w-xs text-sm">
-                Type a message to test the chatbot with the current
-                configuration. This uses your unsaved edits as you tune them.
+                Type a message to test the chatbot with the current configuration. This uses your
+                unsaved edits as you tune them.
               </p>
             </div>
           )}
@@ -170,9 +158,7 @@ export function CopilotChatPlayground({
               )}
             >
               {m.content || <span className="opacity-70">…</span>}
-              {m.streaming && (
-                <span className="animate-pulse"> ▌</span>
-              )}
+              {m.streaming && <span className="animate-pulse"> ▌</span>}
             </div>
           ))}
         </div>
@@ -186,11 +172,7 @@ export function CopilotChatPlayground({
             placeholder="Ask the companion something…"
             disabled={sending}
           />
-          <Button
-            onClick={send}
-            disabled={sending || !input.trim()}
-            aria-label="Send message"
-          >
+          <Button onClick={send} disabled={sending || !input.trim()} aria-label="Send message">
             {sending ? (
               <span className="size-4 animate-spin rounded-full border-2 border-background border-t-transparent" />
             ) : (

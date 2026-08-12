@@ -17,8 +17,7 @@ export function buildChatModel(cfg: ChatModelParams) {
   return getGenerativeModel(ai, {
     model: cfg.model,
     systemInstruction:
-      cfg.systemInstruction.trim() +
-      (directive ? "\n\nCRISIS PROTOCOL:\n" + directive : ""),
+      cfg.systemInstruction.trim() + (directive ? "\n\nCRISIS PROTOCOL:\n" + directive : ""),
     generationConfig: {
       temperature: cfg.temperature,
       maxOutputTokens: cfg.maxOutputTokens,

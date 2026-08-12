@@ -37,7 +37,7 @@ export default function ArticlesPage() {
     setDeleting(true);
     try {
       if (deleteTarget.imageUrl) {
-        await deleteFile(deleteTarget.imageUrl).catch(() => { });
+        await deleteFile(deleteTarget.imageUrl).catch(() => {});
       }
       await deleteDoc(doc(db, "articles", deleteTarget.id));
       toast.add({ title: "Article deleted", type: "success" });
@@ -80,9 +80,7 @@ export default function ArticlesPage() {
               </button>
               <div className="min-w-0">
                 <p className="truncate font-medium">{article.title}</p>
-                <p className="truncate text-xs text-muted-foreground">
-                  {article.subtitle}
-                </p>
+                <p className="truncate text-xs text-muted-foreground">{article.subtitle}</p>
               </div>
             </div>
           );
@@ -93,11 +91,7 @@ export default function ArticlesPage() {
         header: "Category",
         cell: ({ getValue }) => {
           const value = String(getValue());
-          return (
-            <Badge className={categoryColor[value] ?? "bg-muted"}>
-              {value}
-            </Badge>
-          );
+          return <Badge className={categoryColor[value] ?? "bg-muted"}>{value}</Badge>;
         },
       },
       {

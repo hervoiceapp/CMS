@@ -101,8 +101,8 @@ export default function PodcastsPage() {
           status,
           publishedAt:
             status === "published"
-              ? editing.publishedAt ?? serverTimestamp()
-              : editing.publishedAt ?? null,
+              ? (editing.publishedAt ?? serverTimestamp())
+              : (editing.publishedAt ?? null),
         });
         toast.add({ title: "Podcast updated", type: "success" });
       } else {
@@ -173,9 +173,7 @@ export default function PodcastsPage() {
               </button>
               <div className="min-w-0">
                 <p className="truncate font-medium">{pod.title}</p>
-                <p className="truncate text-xs text-muted-foreground">
-                  {pod.subtitle}
-                </p>
+                <p className="truncate text-xs text-muted-foreground">{pod.subtitle}</p>
               </div>
             </div>
           );
@@ -201,8 +199,7 @@ export default function PodcastsPage() {
       {
         accessorKey: "duration",
         header: "Duration",
-        cell: ({ getValue }) =>
-          getValue() ? formatDuration(String(getValue())) : "—",
+        cell: ({ getValue }) => (getValue() ? formatDuration(String(getValue())) : "—"),
       },
       {
         accessorKey: "createdAt",
@@ -247,11 +244,7 @@ export default function PodcastsPage() {
             </DialogDescription>
           </DialogHeader>
 
-          <form
-            onSubmit={form.handleSubmit(onSubmit)}
-            className="space-y-4"
-            id="podcast-form"
-          >
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4" id="podcast-form">
             <DropZone
               label="Audio File"
               accept="audio/*"
@@ -260,14 +253,10 @@ export default function PodcastsPage() {
               value={form.watch("uri")}
               onChange={(gsUrl) => form.setValue("uri", gsUrl)}
               extractDuration
-              onDurationExtracted={(sec) =>
-                form.setValue("duration", String(sec))
-              }
+              onDurationExtracted={(sec) => form.setValue("duration", String(sec))}
             />
             {form.formState.errors.uri && (
-              <p className="text-xs text-destructive">
-                {form.formState.errors.uri.message}
-              </p>
+              <p className="text-xs text-destructive">{form.formState.errors.uri.message}</p>
             )}
 
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
@@ -279,9 +268,7 @@ export default function PodcastsPage() {
                   {...form.register("title")}
                 />
                 {form.formState.errors.title && (
-                  <p className="text-xs text-destructive">
-                    {form.formState.errors.title.message}
-                  </p>
+                  <p className="text-xs text-destructive">{form.formState.errors.title.message}</p>
                 )}
               </div>
               <div className="space-y-2">
@@ -292,9 +279,7 @@ export default function PodcastsPage() {
                   {...form.register("author")}
                 />
                 {form.formState.errors.author && (
-                  <p className="text-xs text-destructive">
-                    {form.formState.errors.author.message}
-                  </p>
+                  <p className="text-xs text-destructive">{form.formState.errors.author.message}</p>
                 )}
               </div>
             </div>
@@ -307,9 +292,7 @@ export default function PodcastsPage() {
                 {...form.register("subtitle")}
               />
               {form.formState.errors.subtitle && (
-                <p className="text-xs text-destructive">
-                  {form.formState.errors.subtitle.message}
-                </p>
+                <p className="text-xs text-destructive">{form.formState.errors.subtitle.message}</p>
               )}
             </div>
 

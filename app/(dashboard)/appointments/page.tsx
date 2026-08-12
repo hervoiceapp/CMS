@@ -78,16 +78,13 @@ export default function AppointmentsPage() {
       {
         accessorKey: "sessionType",
         header: "Type",
-        cell: ({ getValue }) => (
-          <Badge variant="secondary">{String(getValue() ?? "—")}</Badge>
-        ),
+        cell: ({ getValue }) => <Badge variant="secondary">{String(getValue() ?? "—")}</Badge>,
       },
       {
         accessorKey: "status",
         header: "Status",
         cell: ({ row }) => {
           const appt = row.original;
-          const badge = statusBadge[appt.status] ?? statusBadge.pending;
           return (
             <select
               value={appt.status}
@@ -110,9 +107,7 @@ export default function AppointmentsPage() {
         cell: ({ getValue }) => {
           const notes = String(getValue() ?? "");
           return notes ? (
-            <p className="line-clamp-1 max-w-xs text-sm text-muted-foreground">
-              {notes}
-            </p>
+            <p className="line-clamp-1 max-w-xs text-sm text-muted-foreground">{notes}</p>
           ) : (
             <span className="text-muted-foreground">—</span>
           );
@@ -137,13 +132,8 @@ export default function AppointmentsPage() {
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
         {(["pending", "confirmed", "declined"] as AppointmentStatus[]).map((s) => (
-          <div
-            key={s}
-            className="rounded-2xl border bg-card p-4 flex flex-col gap-1"
-          >
-            <Badge className={`w-fit ${statusBadge[s].className}`}>
-              {statusBadge[s].label}
-            </Badge>
+          <div key={s} className="rounded-2xl border bg-card p-4 flex flex-col gap-1">
+            <Badge className={`w-fit ${statusBadge[s].className}`}>{statusBadge[s].label}</Badge>
             <span className="mt-1 text-2xl font-bold">{counts[s]}</span>
           </div>
         ))}

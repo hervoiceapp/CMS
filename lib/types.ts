@@ -160,23 +160,15 @@ export interface Notification {
   createdAt: Timestamp | Date | number | undefined;
 }
 
-export function isTimestampLike(
-  value: unknown,
-): value is { seconds: number } {
-  return (
-    !!value &&
-    typeof value === "object" &&
-    "seconds" in (value as { seconds: number })
-  );
+export function isTimestampLike(value: unknown): value is { seconds: number } {
+  return !!value && typeof value === "object" && "seconds" in (value as { seconds: number });
 }
 
 export function formatDate(createdAt: unknown): string {
   if (!createdAt) return "";
   const date =
     isTimestampLike(createdAt) || typeof createdAt === "number"
-      ? new Date(
-          isTimestampLike(createdAt) ? createdAt.seconds * 1000 : createdAt,
-        )
+      ? new Date(isTimestampLike(createdAt) ? createdAt.seconds * 1000 : createdAt)
       : createdAt instanceof Date
         ? createdAt
         : new Date(createdAt as string | number);
@@ -192,9 +184,7 @@ export function formatDateTime(createdAt: unknown): string {
   if (!createdAt) return "";
   const date =
     isTimestampLike(createdAt) || typeof createdAt === "number"
-      ? new Date(
-          isTimestampLike(createdAt) ? createdAt.seconds * 1000 : createdAt,
-        )
+      ? new Date(isTimestampLike(createdAt) ? createdAt.seconds * 1000 : createdAt)
       : createdAt instanceof Date
         ? createdAt
         : new Date(createdAt as string | number);

@@ -102,8 +102,8 @@ export default function VideosPage() {
           status,
           publishedAt:
             status === "published"
-              ? editing.publishedAt ?? serverTimestamp()
-              : editing.publishedAt ?? null,
+              ? (editing.publishedAt ?? serverTimestamp())
+              : (editing.publishedAt ?? null),
         });
         toast.add({ title: "Video updated", type: "success" });
       } else {
@@ -171,9 +171,7 @@ export default function VideosPage() {
               </button>
               <div className="min-w-0">
                 <p className="truncate font-medium">{video.title}</p>
-                <p className="truncate text-xs text-muted-foreground">
-                  {video.description}
-                </p>
+                <p className="truncate text-xs text-muted-foreground">{video.description}</p>
               </div>
             </div>
           );
@@ -215,8 +213,7 @@ export default function VideosPage() {
       {
         accessorKey: "duration",
         header: "Duration",
-        cell: ({ getValue }) =>
-          getValue() ? formatDuration(String(getValue())) : "—",
+        cell: ({ getValue }) => (getValue() ? formatDuration(String(getValue())) : "—"),
       },
       {
         accessorKey: "createdAt",
@@ -255,17 +252,11 @@ export default function VideosPage() {
           <DialogHeader>
             <DialogTitle>{editing ? "Edit Video" : "Upload Video"}</DialogTitle>
             <DialogDescription>
-              {editing
-                ? "Update video metadata and thumbnail."
-                : "Add a new video to the library."}
+              {editing ? "Update video metadata and thumbnail." : "Add a new video to the library."}
             </DialogDescription>
           </DialogHeader>
 
-          <form
-            onSubmit={form.handleSubmit(onSubmit)}
-            className="space-y-4"
-            id="video-form"
-          >
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4" id="video-form">
             <DropZone
               label="Video File"
               accept="video/*"
@@ -277,9 +268,7 @@ export default function VideosPage() {
               onDurationExtracted={(sec) => form.setValue("duration", String(sec))}
             />
             {form.formState.errors.uri && (
-              <p className="text-xs text-destructive">
-                {form.formState.errors.uri.message}
-              </p>
+              <p className="text-xs text-destructive">{form.formState.errors.uri.message}</p>
             )}
 
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
@@ -291,33 +280,21 @@ export default function VideosPage() {
                   {...form.register("title")}
                 />
                 {form.formState.errors.title && (
-                  <p className="text-xs text-destructive">
-                    {form.formState.errors.title.message}
-                  </p>
+                  <p className="text-xs text-destructive">{form.formState.errors.title.message}</p>
                 )}
               </div>
               <div className="space-y-2">
                 <Label htmlFor="video-coach">Coach</Label>
-                <Input
-                  id="video-coach"
-                  placeholder="e.g. Coach Ama"
-                  {...form.register("coach")}
-                />
+                <Input id="video-coach" placeholder="e.g. Coach Ama" {...form.register("coach")} />
                 {form.formState.errors.coach && (
-                  <p className="text-xs text-destructive">
-                    {form.formState.errors.coach.message}
-                  </p>
+                  <p className="text-xs text-destructive">{form.formState.errors.coach.message}</p>
                 )}
               </div>
             </div>
 
             <div className="space-y-2">
               <Label htmlFor="video-category">Category</Label>
-              <NativeSelect
-                id="video-category"
-                className="w-full"
-                {...form.register("category")}
-              >
+              <NativeSelect id="video-category" className="w-full" {...form.register("category")}>
                 {VIDEO_CATEGORIES.map((category) => (
                   <NativeSelectOption key={category} value={category}>
                     {category}

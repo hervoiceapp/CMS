@@ -64,11 +64,7 @@ export function RichTextEditor({ content, onChange }: RichTextEditorProps) {
   const [fullscreen, setFullscreen] = useState(false);
 
   const editor = useEditor({
-    extensions: [
-      StarterKit,
-      ImageExtension,
-      LinkExtension.configure({ openOnClick: false }),
-    ],
+    extensions: [StarterKit, ImageExtension, LinkExtension.configure({ openOnClick: false })],
     content,
     editorProps: {
       attributes: {

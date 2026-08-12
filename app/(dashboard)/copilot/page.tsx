@@ -55,14 +55,10 @@ export default function CopilotPage() {
             model: (AI_MODELS as readonly string[]).includes(d.model)
               ? d.model
               : DEFAULT_COPILOT_CONFIG.model,
-            systemInstruction:
-              d.systemInstruction ?? DEFAULT_COPILOT_CONFIG.systemInstruction,
-            crisisDirective:
-              d.crisisDirective ?? DEFAULT_COPILOT_CONFIG.crisisDirective,
+            systemInstruction: d.systemInstruction ?? DEFAULT_COPILOT_CONFIG.systemInstruction,
+            crisisDirective: d.crisisDirective ?? DEFAULT_COPILOT_CONFIG.crisisDirective,
             temperature: Number(d.temperature ?? DEFAULT_COPILOT_CONFIG.temperature),
-            maxOutputTokens: Number(
-              d.maxOutputTokens ?? DEFAULT_COPILOT_CONFIG.maxOutputTokens,
-            ),
+            maxOutputTokens: Number(d.maxOutputTokens ?? DEFAULT_COPILOT_CONFIG.maxOutputTokens),
           });
         } else {
           form.reset({ ...DEFAULT_COPILOT_CONFIG });
@@ -124,10 +120,12 @@ export default function CopilotPage() {
       {form.formState.isDirty && (
         <div className="flex items-center justify-between gap-3 rounded-2xl border border-amber-400/40 bg-amber-400/10 p-3">
           <p className="text-sm text-amber-700 dark:text-amber-300">
-            Testing unsaved changes — the playground uses these edits. Save to
-            apply them to the live app.
+            Testing unsaved changes — the playground uses these edits. Save to apply them to the
+            live app.
           </p>
-          <Badge variant="secondary" className="shrink-0">Unsaved</Badge>
+          <Badge variant="secondary" className="shrink-0">
+            Unsaved
+          </Badge>
         </div>
       )}
 
@@ -143,11 +141,7 @@ export default function CopilotPage() {
             <CardContent className="space-y-5">
               <div className="space-y-2">
                 <Label htmlFor="ci-model">Model</Label>
-                <NativeSelect
-                  id="ci-model"
-                  className="w-full"
-                  {...form.register("model")}
-                >
+                <NativeSelect id="ci-model" className="w-full" {...form.register("model")}>
                   {AI_MODELS.map((m) => (
                     <NativeSelectOption key={m} value={m}>
                       {m}
@@ -155,19 +149,13 @@ export default function CopilotPage() {
                   ))}
                 </NativeSelect>
                 {form.formState.errors.model && (
-                  <p className="text-xs text-destructive">
-                    {form.formState.errors.model.message}
-                  </p>
+                  <p className="text-xs text-destructive">{form.formState.errors.model.message}</p>
                 )}
               </div>
 
               <div className="space-y-2">
                 <Label htmlFor="ci-instruction">System instruction</Label>
-                <Textarea
-                  id="ci-instruction"
-                  rows={10}
-                  {...form.register("systemInstruction")}
-                />
+                <Textarea id="ci-instruction" rows={10} {...form.register("systemInstruction")} />
                 {form.formState.errors.systemInstruction && (
                   <p className="text-xs text-destructive">
                     {form.formState.errors.systemInstruction.message}
@@ -177,14 +165,9 @@ export default function CopilotPage() {
 
               <div className="space-y-2">
                 <Label htmlFor="ci-crisis">Crisis directive</Label>
-                <Textarea
-                  id="ci-crisis"
-                  rows={4}
-                  {...form.register("crisisDirective")}
-                />
+                <Textarea id="ci-crisis" rows={4} {...form.register("crisisDirective")} />
                 <p className="text-xs text-muted-foreground">
-                  Appended as the “CRISIS PROTOCOL” block guiding self-harm and
-                  emergency responses.
+                  Appended as the “CRISIS PROTOCOL” block guiding self-harm and emergency responses.
                 </p>
               </div>
 
@@ -224,9 +207,7 @@ export default function CopilotPage() {
             </CardContent>
             <CardFooter className="flex flex-col items-stretch gap-3 sm:flex-row sm:items-center sm:justify-between">
               <div className="text-xs text-muted-foreground">
-                {lastUpdated
-                  ? `Last updated ${lastUpdated}`
-                  : "No config saved yet"}
+                {lastUpdated ? `Last updated ${lastUpdated}` : "No config saved yet"}
                 {loading && " · loading…"}
               </div>
               <div className="flex items-center gap-2">

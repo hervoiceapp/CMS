@@ -100,7 +100,9 @@ export default function AppSettingsPage() {
           <p className="text-sm text-amber-700 dark:text-amber-300">
             Maintenance mode is ON — mobile users will see the message below.
           </p>
-          <Badge variant="secondary" className="shrink-0">Active</Badge>
+          <Badge variant="secondary" className="shrink-0">
+            Active
+          </Badge>
         </div>
       )}
 
@@ -116,11 +118,7 @@ export default function AppSettingsPage() {
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <div className="space-y-2">
                 <Label htmlFor="ac-min-version">Current app version</Label>
-                <Input
-                  id="ac-min-version"
-                  placeholder="1.2.3"
-                  {...form.register("minVersion")}
-                />
+                <Input id="ac-min-version" placeholder="1.2.3" {...form.register("minVersion")} />
                 {form.formState.errors.minVersion && (
                   <p className="text-xs text-destructive">
                     {form.formState.errors.minVersion.message}
@@ -161,9 +159,7 @@ export default function AppSettingsPage() {
                   id="ac-maintenance"
                   type="checkbox"
                   checked={watched.maintenanceMode}
-                  onChange={(e) =>
-                    form.setValue("maintenanceMode", e.target.checked)
-                  }
+                  onChange={(e) => form.setValue("maintenanceMode", e.target.checked)}
                   className="size-5 accent-primary"
                 />
               </div>
@@ -191,17 +187,15 @@ export default function AppSettingsPage() {
                   </p>
                 )}
                 <p className="text-xs text-muted-foreground">
-                  Used by the &quot;Update now&quot; button when an update is
-                  forced. Leave blank to use the platform default link.
+                  Used by the &quot;Update now&quot; button when an update is forced. Leave blank to
+                  use the platform default link.
                 </p>
               </div>
             </div>
           </CardContent>
           <CardFooter className="flex flex-col items-stretch gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div className="text-xs text-muted-foreground">
-              {lastUpdated
-                ? `Last updated ${lastUpdated}`
-                : "No settings saved yet"}
+              {lastUpdated ? `Last updated ${lastUpdated}` : "No settings saved yet"}
               {loading && " · loading…"}
             </div>
             <Button

@@ -20,10 +20,7 @@ import {
 } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
-const severityTone: Record<
-  string,
-  { label: string; className: string }
-> = {
+const severityTone: Record<string, { label: string; className: string }> = {
   "Mild Postnatal Emotional Challenges": {
     label: "Mild",
     className: "bg-emerald-500/10 text-emerald-600",
@@ -48,24 +45,18 @@ function toneFor(severity: string | undefined) {
 }
 
 export default function ScreeningsPage() {
-  const { data, loading, error } = useCollection<ScreeningResult>(
-    "screening_results",
-  );
+  const { data, loading, error } = useCollection<ScreeningResult>("screening_results");
   const [selected, setSelected] = useState<ScreeningResult | null>(null);
 
   const sorted = useMemo(
     () =>
       [...data].sort((a, b) => {
         const ta =
-          a.timestamp &&
-          typeof a.timestamp === "object" &&
-          "seconds" in a.timestamp
+          a.timestamp && typeof a.timestamp === "object" && "seconds" in a.timestamp
             ? a.timestamp.seconds
             : 0;
         const tb =
-          b.timestamp &&
-          typeof b.timestamp === "object" &&
-          "seconds" in b.timestamp
+          b.timestamp && typeof b.timestamp === "object" && "seconds" in b.timestamp
             ? b.timestamp.seconds
             : 0;
         return tb - ta;
@@ -88,20 +79,17 @@ export default function ScreeningsPage() {
         accessorKey: "userName",
         header: "Member",
         cell: ({ getValue }) =>
-          String(getValue() ?? "")
-
-            ? String(getValue())
-            : (
-                <span className="text-muted-foreground">Community Member</span>
-              ),
+          String(getValue() ?? "") ? (
+            String(getValue())
+          ) : (
+            <span className="text-muted-foreground">Community Member</span>
+          ),
       },
       {
         accessorKey: "totalScore",
         header: "Score",
         cell: ({ getValue }) => (
-          <span className="font-medium tabular-nums">
-            {String(getValue() ?? "—")}
-          </span>
+          <span className="font-medium tabular-nums">{String(getValue() ?? "—")}</span>
         ),
       },
       {
@@ -148,10 +136,7 @@ export default function ScreeningsPage() {
           ["Moderate", "Moderate", "bg-amber-500/10 text-amber-600"],
           ["Severe", "Severe", "bg-rose-500/10 text-rose-600"],
         ].map(([label, key, className]) => (
-          <div
-            key={String(key)}
-            className="flex flex-col gap-1 rounded-2xl border bg-card p-4"
-          >
+          <div key={String(key)} className="flex flex-col gap-1 rounded-2xl border bg-card p-4">
             <Badge className={`w-fit ${className}`}>{label}</Badge>
             <span className="mt-1 text-2xl font-bold">{counts[String(key)] ?? 0}</span>
           </div>
@@ -170,9 +155,7 @@ export default function ScreeningsPage() {
       <Dialog open={!!selected} onOpenChange={(open) => !open && setSelected(null)}>
         <DialogContent className="sm:max-w-2xl">
           <DialogHeader>
-            <DialogTitle>
-              {selected?.userName || "Screening Result"}
-            </DialogTitle>
+            <DialogTitle>{selected?.userName || "Screening Result"}</DialogTitle>
             <DialogDescription>
               {selected
                 ? `${formatDateTime(selected.timestamp)} · Score ${selected.totalScore ?? "—"}`
@@ -207,10 +190,7 @@ export default function ScreeningsPage() {
                   </p>
                   <div className="space-y-2">
                     {selected.answers.map((a, i) => (
-                      <div
-                        key={i}
-                        className="rounded-xl border bg-muted/40 p-3"
-                      >
+                      <div key={i} className="rounded-xl border bg-muted/40 p-3">
                         <p className="text-sm font-medium">{a.text}</p>
                         <p className="mt-1 text-xs text-muted-foreground">
                           Answer {a.answer} · Score {a.score}

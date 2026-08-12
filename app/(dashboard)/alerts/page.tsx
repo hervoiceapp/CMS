@@ -14,7 +14,6 @@ import { formatDate } from "@/lib/types";
 import { DataTable } from "@/components/DataTable";
 import { PageHeader } from "@/components/PageHeader";
 import { ConfirmDialog } from "@/components/ConfirmDialog";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -79,17 +78,13 @@ export default function AlertsPage() {
       {
         accessorKey: "title",
         header: "Title",
-        cell: ({ getValue }) => (
-          <span className="font-medium">{String(getValue())}</span>
-        ),
+        cell: ({ getValue }) => <span className="font-medium">{String(getValue())}</span>,
       },
       {
         accessorKey: "body",
         header: "Message",
         cell: ({ getValue }) => (
-          <p className="line-clamp-1 max-w-md text-muted-foreground">
-            {String(getValue())}
-          </p>
+          <p className="line-clamp-1 max-w-md text-muted-foreground">{String(getValue())}</p>
         ),
       },
       {
@@ -145,11 +140,7 @@ export default function AlertsPage() {
             </DialogDescription>
           </DialogHeader>
 
-          <form
-            onSubmit={form.handleSubmit(onSubmit)}
-            className="space-y-4"
-            id="alert-form"
-          >
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4" id="alert-form">
             <div className="space-y-2">
               <Label htmlFor="alert-title">Alert Title</Label>
               <Input
@@ -158,9 +149,7 @@ export default function AlertsPage() {
                 {...form.register("title")}
               />
               {form.formState.errors.title && (
-                <p className="text-xs text-destructive">
-                  {form.formState.errors.title.message}
-                </p>
+                <p className="text-xs text-destructive">{form.formState.errors.title.message}</p>
               )}
             </div>
             <div className="space-y-2">
@@ -172,9 +161,7 @@ export default function AlertsPage() {
                 {...form.register("body")}
               />
               {form.formState.errors.body && (
-                <p className="text-xs text-destructive">
-                  {form.formState.errors.body.message}
-                </p>
+                <p className="text-xs text-destructive">{form.formState.errors.body.message}</p>
               )}
             </div>
           </form>

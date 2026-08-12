@@ -1,17 +1,7 @@
 "use client";
 
-import {
-  createContext,
-  useCallback,
-  useContext,
-  useEffect,
-  useState,
-} from "react";
-import {
-  onAuthStateChanged,
-  signOut as firebaseSignOut,
-  type User,
-} from "firebase/auth";
+import { createContext, useCallback, useContext, useEffect, useState } from "react";
+import { onAuthStateChanged, signOut as firebaseSignOut, type User } from "firebase/auth";
 import { auth } from "@/lib/firebase";
 
 export type Role = "admin" | "medical";
@@ -55,9 +45,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   return (
-    <AuthContext.Provider value={{ user, role, loading, signOut }}>
-      {children}
-    </AuthContext.Provider>
+    <AuthContext.Provider value={{ user, role, loading, signOut }}>{children}</AuthContext.Provider>
   );
 }
 

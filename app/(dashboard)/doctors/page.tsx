@@ -93,8 +93,8 @@ export default function DoctorsPage() {
           status,
           publishedAt:
             status === "published"
-              ? editing.publishedAt ?? serverTimestamp()
-              : editing.publishedAt ?? null,
+              ? (editing.publishedAt ?? serverTimestamp())
+              : (editing.publishedAt ?? null),
         });
         toast.add({ title: "Doctor updated", type: "success" });
       } else {
@@ -118,7 +118,7 @@ export default function DoctorsPage() {
     if (!deleteTarget) return;
     try {
       if (deleteTarget.image) {
-        await deleteFile(deleteTarget.image).catch(() => { });
+        await deleteFile(deleteTarget.image).catch(() => {});
       }
       await deleteDoc(doc(db, "doctors", deleteTarget.id));
       toast.add({ title: "Doctor removed", type: "success" });
@@ -142,9 +142,7 @@ export default function DoctorsPage() {
             <div className="flex items-center gap-3">
               <Avatar className="size-9">
                 {src ? <AvatarImage src={src} alt={doctor.name} /> : null}
-                <AvatarFallback
-                  style={{ backgroundColor: doctor.color || "#FECACA" }}
-                >
+                <AvatarFallback style={{ backgroundColor: doctor.color || "#FECACA" }}>
                   {(doctor.name || "?").charAt(0)}
                 </AvatarFallback>
               </Avatar>
@@ -228,11 +226,7 @@ export default function DoctorsPage() {
             </DialogDescription>
           </DialogHeader>
 
-          <form
-            onSubmit={form.handleSubmit(onSubmit)}
-            className="space-y-4"
-            id="doctor-form"
-          >
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4" id="doctor-form">
             <DropZone
               label="Profile Image"
               accept="image/*"
@@ -275,19 +269,13 @@ export default function DoctorsPage() {
                 aria-invalid={!!form.formState.errors.name}
               />
               {form.formState.errors.name && (
-                <p className="text-xs text-destructive">
-                  {form.formState.errors.name.message}
-                </p>
+                <p className="text-xs text-destructive">{form.formState.errors.name.message}</p>
               )}
             </div>
 
             <div className="space-y-2">
               <Label htmlFor="title">Clinical Specialty Title</Label>
-              <NativeSelect
-                id="title"
-                className="w-full"
-                {...form.register("title")}
-              >
+              <NativeSelect id="title" className="w-full" {...form.register("title")}>
                 {DOCTOR_TITLES.map((title) => (
                   <NativeSelectOption key={title} value={title}>
                     {title}
@@ -295,9 +283,7 @@ export default function DoctorsPage() {
                 ))}
               </NativeSelect>
               {form.formState.errors.title && (
-                <p className="text-xs text-destructive">
-                  {form.formState.errors.title.message}
-                </p>
+                <p className="text-xs text-destructive">{form.formState.errors.title.message}</p>
               )}
             </div>
 
@@ -316,32 +302,33 @@ export default function DoctorsPage() {
                 aria-invalid={!!form.formState.errors.rating}
               />
               {form.formState.errors.rating && (
-                <p className="text-xs text-destructive">
-                  {form.formState.errors.rating.message}
-                </p>
+                <p className="text-xs text-destructive">{form.formState.errors.rating.message}</p>
               )}
             </div>
 
             <div className="space-y-2">
               <Label>Avatar Color</Label>
               <div className="flex flex-wrap items-center gap-2">
-                {[...DOCTOR_COLORS, ...(form.watch("color") && !DOCTOR_COLORS.includes(form.watch("color") as never)
-                  ? [form.watch("color") as string]
-                  : [])].map((color) => (
-                    <button
-                      key={color}
-                      type="button"
-                      aria-label={`Color ${color}`}
-                      onClick={() => form.setValue("color", color)}
-                      className={cn(
-                        "size-7 rounded-full ring-2 ring-offset-2 transition-all",
-                        form.watch("color") === color
-                          ? "ring-foreground"
-                          : "ring-transparent hover:ring-border",
-                      )}
-                      style={{ backgroundColor: color }}
-                    />
-                  ))}
+                {[
+                  ...DOCTOR_COLORS,
+                  ...(form.watch("color") && !DOCTOR_COLORS.includes(form.watch("color") as never)
+                    ? [form.watch("color") as string]
+                    : []),
+                ].map((color) => (
+                  <button
+                    key={color}
+                    type="button"
+                    aria-label={`Color ${color}`}
+                    onClick={() => form.setValue("color", color)}
+                    className={cn(
+                      "size-7 rounded-full ring-2 ring-offset-2 transition-all",
+                      form.watch("color") === color
+                        ? "ring-foreground"
+                        : "ring-transparent hover:ring-border",
+                    )}
+                    style={{ backgroundColor: color }}
+                  />
+                ))}
               </div>
             </div>
           </form>

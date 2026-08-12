@@ -139,12 +139,7 @@ export function DataTable<T extends { id?: string }>({
         <div>
           <p className="text-sm font-medium">{error}</p>
           {onRetry && (
-            <Button
-              variant="outline"
-              size="sm"
-              className="mt-3"
-              onClick={onRetry}
-            >
+            <Button variant="outline" size="sm" className="mt-3" onClick={onRetry}>
               Retry
             </Button>
           )}
@@ -185,9 +180,7 @@ export function DataTable<T extends { id?: string }>({
                 (cell) => cell.column.id === headerGroup.headers[0]?.column.id,
               );
               const details = detailHeaders
-                .map((header) =>
-                  cells.find((cell) => cell.column.id === header.column.id),
-                )
+                .map((header) => cells.find((cell) => cell.column.id === header.column.id))
                 .filter((cell): cell is Cell<T, unknown> => Boolean(cell));
               const actions = cells.find((cell) => cell.column.id === "actions");
               return (
@@ -199,20 +192,14 @@ export function DataTable<T extends { id?: string }>({
                   {details.length > 0 && (
                     <dl className="grid grid-cols-2 gap-x-4 gap-y-3">
                       {details.map((cell) => {
-                        const header = detailHeaders.find(
-                          (h) => h.column.id === cell.column.id,
-                        );
+                        const header = detailHeaders.find((h) => h.column.id === cell.column.id);
                         const label = header?.column.columnDef.header;
                         return (
                           <div key={cell.id} className="min-w-0">
                             <dt className="text-xs text-muted-foreground">
-                              {typeof label === "string"
-                                ? label
-                                : cell.column.id}
+                              {typeof label === "string" ? label : cell.column.id}
                             </dt>
-                            <dd className="mt-0.5 min-w-0">
-                              {renderCellValue(cell)}
-                            </dd>
+                            <dd className="mt-0.5 min-w-0">{renderCellValue(cell)}</dd>
                           </div>
                         );
                       })}
@@ -252,7 +239,10 @@ export function DataTable<T extends { id?: string }>({
                             ) : sorted === "desc" ? (
                               <HugeiconsIcon icon={ArrowDown01Icon} className="size-3.5" />
                             ) : header.column.getCanSort() ? (
-                              <HugeiconsIcon icon={UnfoldMoreIcon} className="size-3.5 opacity-40" />
+                              <HugeiconsIcon
+                                icon={UnfoldMoreIcon}
+                                className="size-3.5 opacity-40"
+                              />
                             ) : null}
                           </span>
                         </th>
@@ -291,9 +281,7 @@ export function DataTable<T extends { id?: string }>({
               <span>Rows per page:</span>
               <select
                 value={pagination.pageSize}
-                onChange={(e) =>
-                  setPagination({ ...pagination, pageSize: Number(e.target.value) })
-                }
+                onChange={(e) => setPagination({ ...pagination, pageSize: Number(e.target.value) })}
                 className="rounded-lg border bg-background px-2 py-1 text-sm"
               >
                 {[5, 10, 20, 50].map((size) => (
@@ -305,8 +293,7 @@ export function DataTable<T extends { id?: string }>({
             </div>
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
               <span>
-                Page {table.getState().pagination.pageIndex + 1} of{" "}
-                {table.getPageCount()}
+                Page {table.getState().pagination.pageIndex + 1} of {table.getPageCount()}
               </span>
               <Button
                 variant="outline"

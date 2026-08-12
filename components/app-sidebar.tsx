@@ -1,6 +1,6 @@
-"use client"
+"use client";
 import { useMemo } from "react";
-import Logo from "@/components/ui/logo"
+import Logo from "@/components/ui/logo";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 import { HugeiconsIcon, type IconSvgElement } from "@hugeicons/react";
@@ -67,7 +67,12 @@ const navGroups: NavGroup[] = [
     items: [
       { href: "/feed", label: "Social Feed", icon: UserMultipleIcon, roles: ["admin"] },
       { href: "/motivations", label: "Daily Motivations", icon: SunriseIcon, roles: ["admin"] },
-      { href: "/screenings", label: "Screening Results", icon: FileValidationIcon, roles: ["admin"] },
+      {
+        href: "/screenings",
+        label: "Screening Results",
+        icon: FileValidationIcon,
+        roles: ["admin"],
+      },
     ],
   },
   {
@@ -100,9 +105,7 @@ export function AppSidebar() {
     return navGroups
       .map((group) => ({
         ...group,
-        items: group.items.filter(
-          (item) => !item.roles || (role && item.roles.includes(role)),
-        ),
+        items: group.items.filter((item) => !item.roles || (role && item.roles.includes(role))),
       }))
       .filter((group) => group.items.length > 0);
   }, [role]);
@@ -118,9 +121,7 @@ export function AppSidebar() {
               </div>
               <div className="flex flex-col gap-0.5 leading-none">
                 <span className="font-semibold">HerVoice</span>
-                <span className="text-xs text-muted-foreground">
-                  Management System
-                </span>
+                <span className="text-xs text-muted-foreground">Management System</span>
               </div>
             </SidebarMenuButton>
           </SidebarMenuItem>
@@ -164,9 +165,7 @@ export function AppSidebar() {
         <div className="flex items-center justify-between gap-2 border-t px-2 py-2">
           <div className="min-w-0">
             <p className="truncate text-sm font-medium">{user?.email}</p>
-            <p className="text-xs text-muted-foreground">
-              {role ? roleLabel[role] : "Signed in"}
-            </p>
+            <p className="text-xs text-muted-foreground">{role ? roleLabel[role] : "Signed in"}</p>
           </div>
           <Button variant="ghost" size="sm" onClick={signOut}>
             Sign out

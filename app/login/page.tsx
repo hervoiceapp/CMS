@@ -8,13 +8,7 @@ import Logo from "@/components/ui/logo";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -52,11 +46,7 @@ export default function LoginPage() {
       } else if (code === "auth/invalid-email") {
         setError("Invalid email format.");
       } else {
-        setError(
-          err instanceof Error
-            ? err.message
-            : "Login failed. Please try again.",
-        );
+        setError(err instanceof Error ? err.message : "Login failed. Please try again.");
       }
     } finally {
       setLoading(false);
@@ -69,9 +59,7 @@ export default function LoginPage() {
         <CardHeader className="items-center text-center">
           <Logo className="size-12" />
           <CardTitle className="text-xl">HerVoice CMS</CardTitle>
-          <CardDescription>
-            Sign in to manage content and appointments.
-          </CardDescription>
+          <CardDescription>Sign in to manage content and appointments.</CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">

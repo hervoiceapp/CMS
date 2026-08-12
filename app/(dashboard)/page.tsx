@@ -2,15 +2,7 @@
 
 import Link from "next/link";
 import { useMemo } from "react";
-import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-} from "recharts";
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 import { useCollection } from "@/hooks/use-collection";
 import { useAuth } from "@/components/auth-provider";
 import type { Article, Appointment, Podcast, Post, ScreeningResult } from "@/lib/types";
@@ -54,7 +46,9 @@ function StatCard({
               {subtext}
             </Badge>
           </div>
-          <div className={`flex size-10 items-center justify-center rounded-xl ${className ?? "bg-muted"}`}>
+          <div
+            className={`flex size-10 items-center justify-center rounded-xl ${className ?? "bg-muted"}`}
+          >
             <HugeiconsIcon icon={icon} className="size-5" />
           </div>
         </div>
@@ -96,21 +90,14 @@ export default function DashboardPage() {
   const isAdmin = role === "admin";
   const { data: appointments, loading: loadingAppointments } =
     useCollection<Appointment>("appointments");
-  const { data: articles, loading: loadingArticles } =
-    useCollection<Article>("articles");
-  const { data: podcasts, loading: loadingPodcasts } =
-    useCollection<Podcast>("podcasts");
-  const { data: rawPosts } = useCollection<
-    Record<string, unknown> & { id: string }
-  >("posts");
+  const { data: articles, loading: loadingArticles } = useCollection<Article>("articles");
+  const { data: podcasts, loading: loadingPodcasts } = useCollection<Podcast>("podcasts");
+  const { data: rawPosts } = useCollection<Record<string, unknown> & { id: string }>("posts");
   const posts = useMemo(() => rawPosts.map((raw) => normalizePost(raw)), [rawPosts]);
   const { data: screenings, loading: loadingScreenings } =
     useCollection<ScreeningResult>("screening_results");
   const severeScreenings = useMemo(
-    () =>
-      screenings.filter((s) =>
-        String(s.severity ?? "").startsWith("Severe"),
-      ),
+    () => screenings.filter((s) => String(s.severity ?? "").startsWith("Severe")),
     [screenings],
   );
   const recentPosts = useMemo(() => {
@@ -126,32 +113,24 @@ export default function DashboardPage() {
     return [...posts].sort((a, b) => ts(b.createdAt) - ts(a.createdAt)).slice(0, 3);
   }, [posts]);
 
-  const pendingAppointments = appointments.filter(
-    (a) => a.status === "pending",
-  );
+  const pendingAppointments = appointments.filter((a) => a.status === "pending");
 
-  const statusCounts = appointments.reduce(
-    (acc: Record<string, number>, a) => {
-      acc[a.status] = (acc[a.status] || 0) + 1;
-      return acc;
-    },
-    {},
-  );
+  const statusCounts = appointments.reduce((acc: Record<string, number>, a) => {
+    acc[a.status] = (acc[a.status] || 0) + 1;
+    return acc;
+  }, {});
   const chartData = Object.entries(statusCounts).map(([status, count]) => ({
     status,
     count,
   }));
 
-  const loading =
-    loadingAppointments && loadingArticles && loadingPodcasts && loadingScreenings;
+  const loading = loadingAppointments && loadingArticles && loadingPodcasts && loadingScreenings;
 
   return (
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-bold tracking-tight">Dashboard</h1>
-        <p className="text-sm text-muted-foreground">
-          Live overview of the HerVoice ecosystem
-        </p>
+        <p className="text-sm text-muted-foreground">Live overview of the HerVoice ecosystem</p>
       </div>
 
       {loading ? (
@@ -213,14 +192,9 @@ export default function DashboardPage() {
           ) : (
             <div className="space-y-4">
               {pendingAppointments.slice(0, 3).map((appointment) => (
-                <div
-                  key={appointment.id}
-                  className="rounded-xl border bg-muted/30 p-4 space-y-3"
-                >
+                <div key={appointment.id} className="rounded-xl border bg-muted/30 p-4 space-y-3">
                   <div className="flex items-start justify-between gap-2">
-                    <h4 className="text-sm font-bold">
-                      {appointment.doctorName}
-                    </h4>
+                    <h4 className="text-sm font-bold">{appointment.doctorName}</h4>
                     <Badge variant="outline" className="font-mono text-[10px]">
                       {appointment.date?.split("T")[0]} @ {appointment.time}
                     </Badge>
@@ -228,7 +202,12 @@ export default function DashboardPage() {
                   <p className="text-xs italic text-muted-foreground leading-relaxed">
                     &ldquo;{appointment.notes}&rdquo;
                   </p>
-                  <Button variant="outline" size="sm" nativeButton={false} render={<Link href="/appointments" />}>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    nativeButton={false}
+                    render={<Link href="/appointments" />}
+                  >
                     Review in Appointment Book
                   </Button>
                 </div>
@@ -238,10 +217,7 @@ export default function DashboardPage() {
         </ActionQueueCard>
 
         {isAdmin && (
-          <ActionQueueCard
-            title="Severe Screening Alerts"
-            icon={ClipboardIcon}
-          >
+          <ActionQueueCard title="Severe Screening Alerts" icon={ClipboardIcon}>
             {severeScreenings.length === 0 ? (
               <p className="rounded-xl border border-dashed p-8 text-center text-xs text-muted-foreground">
                 No severe screening results.
@@ -249,10 +225,7 @@ export default function DashboardPage() {
             ) : (
               <div className="space-y-4">
                 {severeScreenings.slice(0, 3).map((screening) => (
-                  <div
-                    key={screening.id}
-                    className="rounded-xl border bg-muted/30 p-4 space-y-2"
-                  >
+                  <div key={screening.id} className="rounded-xl border bg-muted/30 p-4 space-y-2">
                     <div className="flex items-start justify-between gap-2">
                       <h4 className="text-sm font-bold">
                         {screening.userName || "Community Member"}
@@ -264,7 +237,12 @@ export default function DashboardPage() {
                     <p className="text-xs italic text-muted-foreground leading-relaxed">
                       {screening.severity || "Screening submitted"}
                     </p>
-                    <Button variant="outline" size="sm" nativeButton={false} render={<Link href="/screenings" />}>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      nativeButton={false}
+                      render={<Link href="/screenings" />}
+                    >
                       Review in Screening Results
                     </Button>
                   </div>
@@ -283,14 +261,9 @@ export default function DashboardPage() {
             ) : (
               <div className="space-y-4">
                 {recentPosts.map((post) => (
-                  <div
-                    key={post.id}
-                    className="rounded-xl border bg-muted/30 p-4 space-y-2"
-                  >
+                  <div key={post.id} className="rounded-xl border bg-muted/30 p-4 space-y-2">
                     <div className="flex items-start justify-between gap-2">
-                      <h4 className="text-sm font-bold">
-                        {post.authorName || "Community Member"}
-                      </h4>
+                      <h4 className="text-sm font-bold">{post.authorName || "Community Member"}</h4>
                       <span className="text-xs text-muted-foreground">
                         {formatDate(post.createdAt)}
                       </span>
@@ -301,7 +274,12 @@ export default function DashboardPage() {
                     <p className="text-xs text-muted-foreground">
                       {post.likes ?? 0} likes • {post.comments ?? 0} comments
                     </p>
-                    <Button variant="outline" size="sm" nativeButton={false} render={<Link href="/feed" />}>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      nativeButton={false}
+                      render={<Link href="/feed" />}
+                    >
                       View Community Feed
                     </Button>
                   </div>
@@ -347,7 +325,12 @@ export default function DashboardPage() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between">
             <CardTitle>Recent Appointments</CardTitle>
-            <Button variant="ghost" size="sm" nativeButton={false} render={<Link href="/appointments" />}>
+            <Button
+              variant="ghost"
+              size="sm"
+              nativeButton={false}
+              render={<Link href="/appointments" />}
+            >
               View all
             </Button>
           </CardHeader>
@@ -364,9 +347,7 @@ export default function DashboardPage() {
                     className="flex items-center justify-between gap-4 px-4 py-3"
                   >
                     <div className="min-w-0">
-                      <p className="truncate text-sm font-medium">
-                        {appointment.doctorName}
-                      </p>
+                      <p className="truncate text-sm font-medium">{appointment.doctorName}</p>
                       <p className="truncate text-xs text-muted-foreground">
                         {formatDate(appointment.date)} • {appointment.time} •{" "}
                         {appointment.sessionType}

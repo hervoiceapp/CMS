@@ -17,9 +17,7 @@ function getStoredTheme(): Theme {
   if (typeof window === "undefined") return "light";
   const stored = window.localStorage.getItem(THEME_KEY) as Theme | null;
   if (stored === "light" || stored === "dark") return stored;
-  return window.matchMedia("(prefers-color-scheme: dark)").matches
-    ? "dark"
-    : "light";
+  return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
 }
 
 function applyTheme(theme: Theme) {
@@ -34,26 +32,15 @@ function subscribeTheme(listener: () => void) {
 }
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const theme = useSyncExternalStore<Theme>(
-    subscribeTheme,
-    getStoredTheme,
-    () => "light",
-  );
+  const theme = useSyncExternalStore<Theme>(subscribeTheme, getStoredTheme, () => "light");
 
   useEffect(() => {
     applyTheme(theme);
   }, [theme]);
 
-  const toggleTheme = useCallback(
-    () => applyTheme(theme === "dark" ? "light" : "dark"),
-    [theme],
-  );
+  const toggleTheme = useCallback(() => applyTheme(theme === "dark" ? "light" : "dark"), [theme]);
 
-  return (
-    <ThemeContext.Provider value={{ theme, toggleTheme }}>
-      {children}
-    </ThemeContext.Provider>
-  );
+  return <ThemeContext.Provider value={{ theme, toggleTheme }}>{children}</ThemeContext.Provider>;
 }
 
 export function useTheme() {

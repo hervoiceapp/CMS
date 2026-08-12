@@ -6,7 +6,11 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint",
+    "lint": "oxlint",
+    "lint:fix": "oxlint --fix",
+    "lint:eslint": "eslint",
+    "fmt": "oxfmt .",
+    "fmt:check": "oxfmt . --check",
     "seed:admin": "node scripts/seed.mjs",
     "deploy:rules": "firebase deploy --only firestore:rules"
   },
@@ -51,6 +55,8 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "16.2.9",
+    "oxfmt": "^0.63.0",
+    "oxlint": "^1.78.0",
     "tailwindcss": "^4",
     "typescript": "^5"
   }

@@ -1,12 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import {
-  collection,
-  onSnapshot,
-  query,
-  type QueryConstraint,
-} from "firebase/firestore";
+import { collection, onSnapshot, query, type QueryConstraint } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 
 export function useCollection<T extends { id: string }>(

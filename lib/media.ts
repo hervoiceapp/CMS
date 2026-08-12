@@ -1,9 +1,4 @@
-import {
-  deleteObject,
-  ref,
-  uploadBytesResumable,
-  type UploadTaskSnapshot,
-} from "firebase/storage";
+import { deleteObject, ref, uploadBytesResumable, type UploadTaskSnapshot } from "firebase/storage";
 import { storage } from "./firebase";
 
 export function gsToHttps(gsUrl: string): string {
@@ -26,9 +21,7 @@ export function uploadFile(
     task.on(
       "state_changed",
       (snapshot: UploadTaskSnapshot) => {
-        const percent = Math.round(
-          (snapshot.bytesTransferred / snapshot.totalBytes) * 100,
-        );
+        const percent = Math.round((snapshot.bytesTransferred / snapshot.totalBytes) * 100);
         onProgress?.(percent);
       },
       (error) => reject(error),

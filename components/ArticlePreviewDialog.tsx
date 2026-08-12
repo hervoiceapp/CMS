@@ -4,12 +4,7 @@ import type { Article } from "@/lib/types";
 import { formatDate } from "@/lib/types";
 import { gsToHttps } from "@/lib/media";
 import { Badge } from "@/components/ui/badge";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
 interface ArticlePreviewDialogProps {
   open: boolean;
@@ -17,11 +12,7 @@ interface ArticlePreviewDialogProps {
   article: Article | null;
 }
 
-export function ArticlePreviewDialog({
-  open,
-  onOpenChange,
-  article,
-}: ArticlePreviewDialogProps) {
+export function ArticlePreviewDialog({ open, onOpenChange, article }: ArticlePreviewDialogProps) {
   if (!article) return null;
   const cover = article.imageUrl ? gsToHttps(article.imageUrl) : "";
 
@@ -33,11 +24,7 @@ export function ArticlePreviewDialog({
         </DialogHeader>
         {cover && (
           // eslint-disable-next-line @next/next/no-img-element
-          <img
-            src={cover}
-            alt=""
-            className="h-56 w-full rounded-xl object-cover"
-          />
+          <img src={cover} alt="" className="h-56 w-full rounded-xl object-cover" />
         )}
         <div className="space-y-2">
           <Badge variant="secondary">{article.category}</Badge>
@@ -45,9 +32,7 @@ export function ArticlePreviewDialog({
           <p className="text-sm text-muted-foreground">
             {article.author} • {formatDate(article.createdAt)}
           </p>
-          {article.subtitle && (
-            <p className="text-muted-foreground">{article.subtitle}</p>
-          )}
+          {article.subtitle && <p className="text-muted-foreground">{article.subtitle}</p>}
         </div>
         <div
           className="prose prose-sm dark:prose-invert max-w-none"
