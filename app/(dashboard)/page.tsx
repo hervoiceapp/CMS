@@ -13,7 +13,7 @@ import {
 } from "recharts";
 import { useCollection } from "@/hooks/use-collection";
 import { useAuth } from "@/components/auth-provider";
-import type { Article, Appointment, Podcast, Post } from "@/lib/types";
+import type { Article, Appointment, Podcast, Post, ScreeningResult } from "@/lib/types";
 import { formatDate, normalizePost } from "@/lib/types";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -25,6 +25,7 @@ import {
   MedicalFileIcon,
   PodcastIcon,
   BubbleChatIcon,
+  ClipboardIcon,
 } from "@hugeicons/core-free-icons";
 
 function StatCard({
@@ -103,6 +104,15 @@ export default function DashboardPage() {
     Record<string, unknown> & { id: string }
   >("posts");
   const posts = useMemo(() => rawPosts.map((raw) => normalizePost(raw)), [rawPosts]);
+  const { data: screenings, loading: loadingScreenings } =
+    useCollection<ScreeningResult>("screening_results");
+  const severeScreenings = useMemo(
+    () =>
+      screenings.filter((s) =>
+        String(s.severity ?? "").startsWith("Severe"),
+      ),
+    [screenings],
+  );
   const recentPosts = useMemo(() => {
     const ts = (v?: Post["createdAt"]) => {
       if (!v) return 0;
@@ -132,7 +142,8 @@ export default function DashboardPage() {
     count,
   }));
 
-  const loading = loadingAppointments && loadingArticles && loadingPodcasts;
+  const loading =
+    loadingAppointments && loadingArticles && loadingPodcasts && loadingScreenings;
 
   return (
     <div className="space-y-6">
@@ -181,6 +192,15 @@ export default function DashboardPage() {
               className="bg-rose-500/10 text-rose-600"
             />
           )}
+          {isAdmin && (
+            <StatCard
+              title="Screenings"
+              value={screenings.length}
+              subtext={`${severeScreenings.length} severe`}
+              icon={ClipboardIcon}
+              className="bg-indigo-500/10 text-indigo-600"
+            />
+          )}
         </div>
       )}
 
@@ -216,6 +236,43 @@ export default function DashboardPage() {
             </div>
           )}
         </ActionQueueCard>
+
+        {isAdmin && (
+          <ActionQueueCard
+            title="Severe Screening Alerts"
+            icon={ClipboardIcon}
+          >
+            {severeScreenings.length === 0 ? (
+              <p className="rounded-xl border border-dashed p-8 text-center text-xs text-muted-foreground">
+                No severe screening results.
+              </p>
+            ) : (
+              <div className="space-y-4">
+                {severeScreenings.slice(0, 3).map((screening) => (
+                  <div
+                    key={screening.id}
+                    className="rounded-xl border bg-muted/30 p-4 space-y-2"
+                  >
+                    <div className="flex items-start justify-between gap-2">
+                      <h4 className="text-sm font-bold">
+                        {screening.userName || "Community Member"}
+                      </h4>
+                      <span className="text-xs text-muted-foreground">
+                        Score {screening.totalScore ?? "—"}
+                      </span>
+                    </div>
+                    <p className="text-xs italic text-muted-foreground leading-relaxed">
+                      {screening.severity || "Screening submitted"}
+                    </p>
+                    <Button variant="outline" size="sm" nativeButton={false} render={<Link href="/screenings" />}>
+                      Review in Screening Results
+                    </Button>
+                  </div>
+                ))}
+              </div>
+            )}
+          </ActionQueueCard>
+        )}
 
         {isAdmin && (
           <ActionQueueCard title="Latest Community Posts" icon={BubbleChatIcon}>
