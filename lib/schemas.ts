@@ -93,6 +93,11 @@ export const appConfigSchema = z.object({
     .regex(/^\d+\.\d+\.\d+$/, "Must be a semver like 1.2.3"),
   maintenanceMode: z.boolean(),
   maintenanceMessage: z.string().optional(),
+  storeUrl: z
+    .string()
+    .url("Must be a valid store link")
+    .optional()
+    .or(z.literal("")),
 });
 
 export type AppConfigForm = z.infer<typeof appConfigSchema>;

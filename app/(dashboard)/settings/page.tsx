@@ -24,6 +24,7 @@ const DEFAULTS: AppConfigForm = {
   forceUpdateBelow: "1.0.0",
   maintenanceMode: false,
   maintenanceMessage: "",
+  storeUrl: "",
 };
 
 export default function AppSettingsPage() {
@@ -50,6 +51,7 @@ export default function AppSettingsPage() {
             forceUpdateBelow: d.forceUpdateBelow ?? DEFAULTS.forceUpdateBelow,
             maintenanceMode: !!d.maintenanceMode,
             maintenanceMessage: d.maintenanceMessage ?? "",
+            storeUrl: d.storeUrl ?? "",
           });
         }
       } catch (err) {
@@ -174,6 +176,24 @@ export default function AppSettingsPage() {
                   placeholder="e.g. We're doing a quick upgrade. Please check back shortly."
                   {...form.register("maintenanceMessage")}
                 />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="ac-store-url">App store link</Label>
+                <Input
+                  id="ac-store-url"
+                  placeholder="https://apps.apple.com/app/id000000000"
+                  {...form.register("storeUrl")}
+                />
+                {form.formState.errors.storeUrl && (
+                  <p className="text-xs text-destructive">
+                    {form.formState.errors.storeUrl.message}
+                  </p>
+                )}
+                <p className="text-xs text-muted-foreground">
+                  Used by the &quot;Update now&quot; button when an update is
+                  forced. Leave blank to use the platform default link.
+                </p>
               </div>
             </div>
           </CardContent>
