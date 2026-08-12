@@ -20,9 +20,11 @@ service firebase.storage {
             || request.auth.token.role == 'medical');
     }
 
-    // Read: any signed-in app user.
+    // Read: any client (browser img/video tags send no auth, so reads are
+    // public; the mobile app reads through the SDK anyway). Write stays
+    // locked to CMS staff under the managed prefixes below.
     match /{allPaths=**} {
-      allow read: if isSignedIn();
+      allow read: if true;
     }
 
     // Write (upload/delete): CMS staff only, under managed prefixes.
