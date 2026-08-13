@@ -124,6 +124,16 @@ service cloud.firestore {
       allow update: if isCmsAdmin();
     }
 
+    // ---------- Group messages (community group chats) ----------
+    // Signed-in users read any group's messages and post under their own id.
+    match /groupMessages/{id} {
+      allow read: if isSignedIn();
+      allow create: if isSignedIn()
+        && request.resource.data.authorId == request.auth.uid;
+      allow delete: if isSignedIn() && resource.data.authorId == request.auth.uid;
+      allow update: if isCmsAdmin();
+    }
+
     // ---------- Screening results ----------
     // Users write their own screening submissions; the care team reads them.
     match /screening_results/{id} {
