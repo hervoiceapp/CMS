@@ -1,0 +1,231 @@
+rules_version = '2';
+
+// HerVoice Firestore Security Rules
+// Project: kolado-mis (shared between the HerVoice mobile app and the CMS)
+//
+// Model:
+//  - `users/{uid}` access is limited to the owner. The mobile community screen
+//    reads the PII-safe `members` collection for "nearby members"; full
+//    `users` docs never leave the owner.
+//  - Public content collections (articles, podcasts, videos, doctors, groups,
+//    posts, notifications) are readable by any authenticated user of the app.
+//  - Only the CMS admin/medical users (Firebase custom claim role) may write
+//    to content collections, with the exception of like/saved counters the
+//    app increments on articles and videos.
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ---------- Helper helpers ----------
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(uid) {
+      return isSignedIn() && request.auth.uid == uid;
+    }
+
+    // CMS staff (dashboard) - has custom claim role 'admin' or 'medical'
+    function isCmsAdmin() {
+      return isSignedIn()
+        && (request.auth.token.role == 'admin'
+            || request.auth.token.role == 'medical');
+    }
+
+    // ---------- Users ----------
+    match /users/{uid} {
+      // A user may read/write their own profile.
+      allow read, write: if isOwner(uid);
+    }
+
+    // ---------- Public content collections (read-only to app users) ----------
+    // The mobile app renders these read-only.
+    match /articles/{id} {
+      allow read: if isSignedIn();
+      // CMS staff may create/update/delete.
+      allow create, update, delete: if isCmsAdmin();
+      // The app only ever increments like/saved counters.
+      // Fields the app may touch: likes, saved. Everything else admin-only.
+      allow update: if isSignedIn()
+        && request.resource.data.diff(resource.data).affectedKeys()
+              .hasOnly(['likes', 'saved'])
+        && request.resource.data.likes is int
+        && request.resource.data.saved is int;
+    }
+
+    match /podcasts/{id} {
+      allow read: if isSignedIn();
+      allow create, update, delete: if isCmsAdmin();
+    }
+
+    match /videos/{id} {
+      allow read: if isSignedIn();
+      allow create, update, delete: if isCmsAdmin();
+      // App increments like/saved counters on videos.
+      allow update: if isSignedIn()
+        && request.resource.data.diff(resource.data).affectedKeys()
+              .hasOnly(['likes', 'saved'])
+        && request.resource.data.likes is int
+        && request.resource.data.saved is int;
+    }
+
+    match /doctors/{id} {
+      allow read: if isSignedIn();
+      allow create, update, delete: if isCmsAdmin();
+    }
+
+    match /groups/{id} {
+      allow read: if isSignedIn();
+      allow create, update, delete: if isCmsAdmin();
+      // App users may adjust the member count by ±1 when joining/leaving.
+      allow update: if isSignedIn()
+        && request.resource.data.diff(resource.data).affectedKeys()
+              .hasOnly(['members'])
+        && request.resource.data.members is int
+        && (request.resource.data.members == resource.data.members + 1
+            || request.resource.data.members == resource.data.members - 1);
+    }
+
+    // Group membership is per user (array of member uids per group).
+    match /groupMembers/{id} {
+      allow read: if isSignedIn();
+      allow create: if isSignedIn()
+        && request.resource.data.members is list
+        && request.resource.data.members.hasOnly([request.auth.uid]);
+      // Join: append your own uid to the member list.
+      allow update: if isSignedIn()
+        && request.resource.data.diff(resource.data).affectedKeys()
+              .hasOnly(['members'])
+        && request.resource.data.members is list
+        && request.resource.data.members.size() == resource.data.members.size() + 1
+        && request.resource.data.members.hasAll(resource.data.members)
+        && request.resource.data.members.hasAny([request.auth.uid]);
+      // Leave: remove your own uid from the member list.
+      allow update: if isSignedIn()
+        && request.resource.data.diff(resource.data).affectedKeys()
+              .hasOnly(['members'])
+        && request.resource.data.members is list
+        && request.resource.data.members.size() == resource.data.members.size() - 1
+        && resource.data.members.hasAll(request.resource.data.members)
+        && resource.data.members.hasAny([request.auth.uid])
+        && !request.resource.data.members.hasAny([request.auth.uid]);
+    }
+
+    // ---------- Direct messages (1:1 chats) ----------
+    // Participants read their conversation; authors send under their own id.
+    match /directMessages/{id} {
+      allow read: if isSignedIn()
+        && (resource.data.authorId == request.auth.uid
+            || resource.data.recipientId == request.auth.uid);
+      allow create: if isSignedIn()
+        && request.resource.data.authorId == request.auth.uid
+        && request.resource.data.recipientId is string
+        && request.resource.data.recipientId != request.auth.uid;
+      allow delete: if isSignedIn() && resource.data.authorId == request.auth.uid;
+      allow update: if isCmsAdmin();
+    }
+
+    match /posts/{id} {
+      // Members may read the feed, create a post, and delete their own post.
+      allow read: if isSignedIn();
+      allow create: if isSignedIn();
+      allow delete: if isSignedIn() && resource.data.authorId == request.auth.uid;
+      allow update: if isCmsAdmin();
+      // App users may increment the like counter and the comment counter.
+      allow update: if isSignedIn()
+        && request.resource.data.diff(resource.data).affectedKeys()
+              .hasOnly(['likes', 'comments'])
+        && request.resource.data.likes is int
+        && request.resource.data.comments is int;
+    }
+
+    // ---------- Post comments ----------
+    // App users create comments; comment authors may delete their own.
+    // CMS staff may update and moderate (delete) any comment.
+    match /postComments/{id} {
+      allow read: if isSignedIn();
+      allow create: if isSignedIn()
+        && request.resource.data.authorId == request.auth.uid;
+      allow delete: if (isSignedIn() && resource.data.authorId == request.auth.uid)
+        || isCmsAdmin();
+      allow update: if isCmsAdmin();
+    }
+
+    // ---------- Group messages (community group chats) ----------
+    // Signed-in users read any group's messages and post under their own id.
+    match /groupMessages/{id} {
+      allow read: if isSignedIn();
+      allow create: if isSignedIn()
+        && request.resource.data.authorId == request.auth.uid;
+      allow delete: if isSignedIn() && resource.data.authorId == request.auth.uid;
+      allow update: if isCmsAdmin();
+    }
+
+    // ---------- Screening results ----------
+    // Users write their own screening submissions; the care team reads them.
+    match /screening_results/{id} {
+      allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid;
+      allow read: if isSignedIn()
+        && (resource.data.userId == request.auth.uid || isCmsAdmin());
+      allow update: if isSignedIn() && resource.data.userId == request.auth.uid;
+      allow delete: if isSignedIn() && resource.data.userId == request.auth.uid;
+    }
+
+    // ---------- Daily motivations ----------
+    // CMS-published, readable by app users.
+    match /daily_motivations/{id} {
+      allow read: if isSignedIn();
+      allow write: if isCmsAdmin();
+    }
+
+    // Notifications are written by the CMS and read by app users.
+    match /notifications/{id} {
+      allow read: if isSignedIn();
+      allow write: if isCmsAdmin();
+    }
+
+    // ---------- Appointments ----------
+    // The app creates appointments; the CMS changes their status.
+    match /appointments/{id} {
+      allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid;
+      allow read: if isSignedIn()
+        && (resource.data.userId == request.auth.uid || isCmsAdmin());
+      allow update: if isCmsAdmin()
+        || (isSignedIn() && resource.data.userId == request.auth.uid);
+      allow delete: if isSignedIn() && resource.data.userId == request.auth.uid;
+    }
+
+    // ---------- Friend requests ----------
+    match /friendRequests/{id} {
+      allow read, create: if isSignedIn();
+      allow delete, update: if isSignedIn();
+    }
+
+    // ---------- Community member search (PII-safe) ----------
+    // The mobile app reads `members/{uid}` (display fields only: name,
+    // language, color) to power "nearby members". Users publish their own
+    // member profile on save; the CMS backfills it from `users` on demand.
+    match /members/{uid} {
+      allow read: if isSignedIn();
+      allow write: if isOwner(uid);
+    }
+
+    // ---------- Analytics events ----------
+    // The app appends one event per key action; the CMS reads them for
+    // product analytics. Events are append-only (no update/delete by users).
+    match /analytics_events/{id} {
+      allow read: if isCmsAdmin();
+      allow create: if isSignedIn();
+      allow update, delete: if isCmsAdmin();
+    }
+
+    // ---------- CMS config singleton ----------
+    match /config/{docId} {
+      // Public read: the app checks maintenance/forced-update flags on
+      // launch, before the user signs in. Contains no sensitive data.
+      allow read: if true;
+      // Only CMS staff may write config.
+      allow write: if isCmsAdmin();
+    }
+  }
+}
