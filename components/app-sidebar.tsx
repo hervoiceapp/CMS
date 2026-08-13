@@ -34,6 +34,7 @@ import {
   Settings01Icon,
   SunriseIcon,
   FileValidationIcon,
+  ShieldUserIcon,
 } from "@hugeicons/core-free-icons";
 
 interface NavItem {
@@ -86,6 +87,7 @@ const navGroups: NavGroup[] = [
     label: "System & Engagement",
     items: [
       { href: "/alerts", label: "Push Alerts Dispatch", icon: FlagIcon, roles: ["admin"] },
+      { href: "/users", label: "User Management", icon: ShieldUserIcon, roles: ["admin"] },
       { href: "/copilot", label: "AI Copilot", icon: BotIcon, roles: ["admin"] },
       { href: "/settings", label: "App Settings", icon: Settings01Icon, roles: ["admin"] },
     ],

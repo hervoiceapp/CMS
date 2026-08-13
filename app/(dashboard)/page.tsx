@@ -60,14 +60,16 @@ function StatCard({
 function ActionQueueCard({
   title,
   icon,
+  className,
   children,
 }: {
   title: string;
   icon: IconSvgElement;
+  className?: string;
   children: React.ReactNode;
 }) {
   return (
-    <Card>
+    <Card className={className}>
       <CardHeader>
         <CardTitle className="flex items-center gap-2 text-base">
           <HugeiconsIcon icon={icon} className="size-4 text-primary" />
@@ -94,7 +96,7 @@ export default function DashboardPage() {
   const { data: podcasts, loading: loadingPodcasts } = useCollection<Podcast>("podcasts");
   const { data: rawPosts } = useCollection<Record<string, unknown> & { id: string }>("posts");
   const posts = useMemo(() => rawPosts.map((raw) => normalizePost(raw)), [rawPosts]);
-  const { data: screenings, loading: loadingScreenings } =
+  const { data: screenings } =
     useCollection<ScreeningResult>("screening_results");
   const severeScreenings = useMemo(
     () => screenings.filter((s) => String(s.severity ?? "").startsWith("Severe")),
@@ -124,7 +126,7 @@ export default function DashboardPage() {
     count,
   }));
 
-  const loading = loadingAppointments && loadingArticles && loadingPodcasts && loadingScreenings;
+  const loading = loadingAppointments && loadingArticles && loadingPodcasts;
 
   return (
     <div className="space-y-6">
@@ -169,15 +171,6 @@ export default function DashboardPage() {
               subtext="Live user-submitted posts"
               icon={BubbleChatIcon}
               className="bg-rose-500/10 text-rose-600"
-            />
-          )}
-          {isAdmin && (
-            <StatCard
-              title="Screenings"
-              value={screenings.length}
-              subtext={`${severeScreenings.length} severe`}
-              icon={ClipboardIcon}
-              className="bg-indigo-500/10 text-indigo-600"
             />
           )}
         </div>
@@ -253,7 +246,7 @@ export default function DashboardPage() {
         )}
 
         {isAdmin && (
-          <ActionQueueCard title="Latest Community Posts" icon={BubbleChatIcon}>
+          <ActionQueueCard title="Latest Community Posts" icon={BubbleChatIcon} className="xl:col-span-2">
             {recentPosts.length === 0 ? (
               <p className="rounded-xl border border-dashed p-8 text-center text-xs text-muted-foreground">
                 No posts yet from the community.

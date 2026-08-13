@@ -78,6 +78,15 @@ export interface Post {
   likes?: number;
 }
 
+export interface PostComment {
+  id: string;
+  postId?: string;
+  authorId?: string;
+  authorName?: string;
+  content?: string;
+  createdAt?: Timestamp | Date | number;
+}
+
 // The `posts` collection has accumulated several doc shapes over time
 // (e.g. `comments`, `likes` vs `commentsCount`, `likesArray`). Normalize the
 // raw Firestore doc into a single canonical shape before display.

@@ -50,7 +50,7 @@ interface DataTableProps<T> {
   keyExtractor?: (item: T) => string;
 }
 
-export function DataTable<T extends { id?: string }>({
+export function DataTable<T>({
   columns,
   data,
   loading,

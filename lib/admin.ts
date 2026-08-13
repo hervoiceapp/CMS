@@ -1,4 +1,5 @@
 import "server-only";
+import type { NextRequest } from "next/server";
 import { cert, getApps, initializeApp } from "firebase-admin/app";
 import { getAuth, type Auth } from "firebase-admin/auth";
 
@@ -52,6 +53,53 @@ export async function verifySessionCookie(cookie: string | undefined) {
   }
 }
 
-export async function setRole(uid: string, role: "admin" | "medical") {
-  await getAdminAuth().setCustomUserClaims(uid, { role });
+export async function setRole(uid: string, role: "admin" | "medical" | null) {
+  await getAdminAuth().setCustomUserClaims(uid, role ? { role } : {});
+}
+
+export interface CmsUser {
+  uid: string;
+  email: string | undefined;
+  role: string | undefined;
+  disabled: boolean;
+  providers: string[];
+  creationTime: string | undefined;
+}
+
+export async function listAllUsers(): Promise<CmsUser[]> {
+  const auth = getAdminAuth();
+  const users: CmsUser[] = [];
+  let pageToken: string | undefined;
+  do {
+    const { users: page, pageToken: next } = await auth.listUsers(1000, pageToken);
+    for (const u of page) {
+      users.push({
+        uid: u.uid,
+        email: u.email ?? undefined,
+        role: typeof u.customClaims?.role === "string" ? u.customClaims.role : undefined,
+        disabled: u.disabled,
+        providers: u.providerData?.map((p) => p.providerId) ?? [],
+        creationTime: u.metadata.creationTime,
+      });
+    }
+    pageToken = next ?? undefined;
+  } while (pageToken);
+  return users;
+}
+
+export async function setUserDisabled(uid: string, disabled: boolean) {
+  await getAdminAuth().updateUser(uid, { disabled });
+}
+
+export async function deleteUserById(uid: string) {
+  await getAdminAuth().deleteUser(uid);
+}
+
+export async function requireCmsAdmin(request: NextRequest) {
+  const cookie = request.cookies.get(SESSION_COOKIE_NAME)?.value;
+  const decoded = await verifySessionCookie(cookie);
+  if (!decoded || decoded.role !== "admin") {
+    return null;
+  }
+  return decoded;
 }
