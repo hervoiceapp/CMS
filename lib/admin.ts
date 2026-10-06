@@ -1,12 +1,15 @@
 import "server-only";
 import type { NextRequest } from "next/server";
-import { cert, getApps, initializeApp } from "firebase-admin/app";
+import { cert, getApps, getApp, initializeApp, type App } from "firebase-admin/app";
 import { getAuth, type Auth } from "firebase-admin/auth";
+import { getFirestore, type Firestore } from "firebase-admin/firestore";
 
 let adminAuth: Auth | null = null;
+let adminDb: Firestore | null = null;
 
-function getAdminAuth() {
-  if (adminAuth) return adminAuth;
+function getAdminApp(): App {
+  const existing = getApps().find((a) => a.name === "cms-admin");
+  if (existing) return existing;
 
   const serviceAccount = process.env.FIREBASE_SERVICE_ACCOUNT;
   if (!serviceAccount) {
@@ -23,12 +26,19 @@ function getAdminAuth() {
     throw new Error("FIREBASE_SERVICE_ACCOUNT must be valid stringified service-account JSON.");
   }
 
-  const app =
-    getApps().find((a) => a.name === "cms-admin") ??
-    initializeApp({ credential, projectId: "kolado-mis" }, "cms-admin");
+  return initializeApp({ credential, projectId: "kolado-mis" }, "cms-admin");
+}
 
-  adminAuth = getAuth(app);
+function getAdminAuth() {
+  if (adminAuth) return adminAuth;
+  adminAuth = getAuth(getAdminApp());
   return adminAuth;
+}
+
+export function getAdminFirestore() {
+  if (adminDb) return adminDb;
+  adminDb = getFirestore(getAdminApp());
+  return adminDb;
 }
 
 export const SESSION_COOKIE_NAME = "session";

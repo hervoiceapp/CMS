@@ -120,7 +120,19 @@ export function normalizePost(raw: Record<string, unknown>): Post {
   };
 }
 
-export type AppointmentStatus = "pending" | "confirmed" | "declined";
+export type AppointmentStatus =
+  | "pending_payment"
+  | "pending"
+  | "confirmed"
+  | "declined"
+  | "cancelled";
+
+export type PaymentStatus =
+  | "pending"
+  | "paid"
+  | "failed"
+  | "refunded"
+  | "rejected";
 
 export interface Appointment {
   id: string;
@@ -133,7 +145,27 @@ export interface Appointment {
   notes: string;
   sessionType: string;
   status: AppointmentStatus;
+  appointmentStatus?: AppointmentStatus;
+  paymentStatus?: PaymentStatus;
+  paymentId?: string;
+  amount?: number;
+  currency?: string;
   userId: string;
+}
+
+export interface Payment {
+  id: string;
+  userId: string;
+  provider: "payaza";
+  transactionReference: string;
+  purpose: "appointment";
+  amount: number;
+  currency: string;
+  paymentStatus: PaymentStatus;
+  appointmentStatus?: AppointmentStatus;
+  appointmentId?: string;
+  createdAt?: Timestamp | Date | number;
+  paidAt?: Timestamp | Date | number;
 }
 
 export interface DailyMotivation {

@@ -185,14 +185,29 @@ service cloud.firestore {
     }
 
     // ---------- Appointments ----------
-    // The app creates appointments; the CMS changes their status.
+    // Appointment creation and all state changes are server-only. The mobile app
+    // must never be able to manufacture a paid/confirmed appointment or delete
+    // one to bypass cancellation/refund handling.
     match /appointments/{id} {
-      allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid;
       allow read: if isSignedIn()
         && (resource.data.userId == request.auth.uid || isCmsAdmin());
-      allow update: if isCmsAdmin()
-        || (isSignedIn() && resource.data.userId == request.auth.uid);
-      allow delete: if isSignedIn() && resource.data.userId == request.auth.uid;
+      allow create, update, delete: if isCmsAdmin();
+    }
+
+    // ---------- Payments ----------
+    // Payment documents are created/updated only by the trusted Payaza backend.
+    match /payments/{id} {
+      allow read: if isSignedIn()
+        && (resource.data.userId == request.auth.uid || isCmsAdmin());
+      allow create, update, delete: if isCmsAdmin();
+    }
+
+    // ---------- Entitlements ----------
+    // Entitlements are issued only after a verified payment webhook.
+    match /entitlements/{id} {
+      allow read: if isSignedIn()
+        && (resource.data.userId == request.auth.uid || isCmsAdmin());
+      allow create, update, delete: if isCmsAdmin();
     }
 
     // ---------- Friend requests ----------

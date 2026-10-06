@@ -12,7 +12,8 @@
     "fmt": "oxfmt .",
     "fmt:check": "oxfmt . --check",
     "seed:admin": "node scripts/seed.mjs",
-    "deploy:rules": "firebase deploy --only firestore:rules"
+    "deploy:rules": "firebase deploy --only firestore:rules",
+    "test:payments": "node --experimental-strip-types --experimental-specifier-resolution=node --experimental-transform-types --test tests/payment.test.ts"
   },
   "dependencies": {
     "@base-ui/react": "^1.7.0",
@@ -36,6 +37,7 @@
     "input-otp": "^1.4.2",
     "lucide-react": "^1.23.0",
     "next": "16.2.9",
+    "payaza-web-sdk": "^1.0.8",
     "react": "19.2.4",
     "react-day-picker": "^10.0.1",
     "react-dom": "19.2.4",

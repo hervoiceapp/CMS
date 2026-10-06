@@ -31,7 +31,13 @@ export const DOCTOR_COLORS = [
   "cyan",
 ] as const;
 
-export const APPOINTMENT_STATUSES = ["pending", "confirmed", "declined"] as const;
+export const APPOINTMENT_STATUSES = [
+  "pending_payment",
+  "pending",
+  "confirmed",
+  "declined",
+  "cancelled",
+] as const;
 
 export const AI_MODELS = ["gemini-3.6-flash", "gemini-3.5-flash", "gemini-3.5-flash-lite"] as const;
 

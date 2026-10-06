@@ -18,9 +18,11 @@ import { HugeiconsIcon } from "@hugeicons/react";
 import { CalendarCheckIcon } from "@hugeicons/core-free-icons";
 
 const statusBadge: Record<AppointmentStatus, { label: string; className: string }> = {
+  pending_payment: { label: "Payment pending", className: "bg-amber-500/10 text-amber-600" },
   pending: { label: "Pending", className: "bg-amber-500/10 text-amber-600" },
   confirmed: { label: "Confirmed", className: "bg-emerald-500/10 text-emerald-600" },
   declined: { label: "Declined", className: "bg-destructive/10 text-destructive" },
+  cancelled: { label: "Cancelled", className: "bg-muted text-muted-foreground" },
 };
 
 export default function AppointmentsPage() {
@@ -117,10 +119,12 @@ export default function AppointmentsPage() {
     [],
   );
 
-  const counts = {
-    pending: data.filter((a) => a.status === "pending").length,
-    confirmed: data.filter((a) => a.status === "confirmed").length,
-    declined: data.filter((a) => a.status === "declined").length,
+  const counts: Record<AppointmentStatus, number> = {
+    pending_payment: data.filter((a) => (a.appointmentStatus || a.status) === "pending_payment").length,
+    pending: data.filter((a) => (a.appointmentStatus || a.status) === "pending").length,
+    confirmed: data.filter((a) => (a.appointmentStatus || a.status) === "confirmed").length,
+    declined: data.filter((a) => (a.appointmentStatus || a.status) === "declined").length,
+    cancelled: data.filter((a) => (a.appointmentStatus || a.status) === "cancelled").length,
   };
 
   return (
