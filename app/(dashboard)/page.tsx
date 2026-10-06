@@ -132,7 +132,7 @@ export default function DashboardPage() {
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-bold tracking-tight">Dashboard</h1>
-        <p className="text-sm text-muted-foreground">Live overview of the HerVoice ecosystem</p>
+        <p className="text-sm text-muted-foreground">Live overview of the Speak up Mama ecosystem</p>
       </div>
 
       {loading ? (

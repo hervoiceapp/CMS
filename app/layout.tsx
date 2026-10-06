@@ -14,9 +14,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "HerVoice || Content Management System (CMS)",
+  title: "Speak up Mama || Content Management System (CMS)",
   description:
-    "A secure, private, and intuitive content management system for HerVoice app administrators.",
+    "A secure, private, and intuitive content management system for Speak up Mama app administrators.",
 };
 
 export default function RootLayout({

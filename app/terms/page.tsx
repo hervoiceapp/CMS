@@ -8,7 +8,7 @@ export default function TermsPage() {
         <div className="mx-auto flex max-w-3xl items-center justify-between px-6 py-4">
           <Link href="/" className="inline-flex items-center gap-2">
             <Logo className="h-8 w-8" />
-            <span className="font-semibold">HerVoice</span>
+            <span className="font-semibold">Speak up Mama</span>
           </Link>
           <Link href="/login" className="text-sm text-muted-foreground hover:text-foreground">
             CMS Sign in
@@ -24,7 +24,7 @@ export default function TermsPage() {
           <section>
             <h2 className="text-xl font-semibold">1. About these terms</h2>
             <p>
-              These Terms of Service (&quot;Terms&quot;) govern your use of the HerVoice app and
+              These Terms of Service (&quot;Terms&quot;) govern your use of the Speak up Mama app and
               website. By creating an account or using the service, you agree to these Terms.
             </p>
           </section>
@@ -32,7 +32,7 @@ export default function TermsPage() {
           <section>
             <h2 className="text-xl font-semibold">2. Not medical advice</h2>
             <p>
-              HerVoice provides general wellness information and support tools. It does{" "}
+              Speak up Mama provides general wellness information and support tools. It does{" "}
               <strong>not</strong> provide medical advice, diagnosis, or treatment. If you are
               experiencing a medical or mental-health emergency, contact your local emergency
               services immediately.
@@ -70,7 +70,7 @@ export default function TermsPage() {
           <section>
             <h2 className="text-xl font-semibold">6. Content you post</h2>
             <p>
-              You retain ownership of the content you post. You grant HerVoice a limited licence to
+              You retain ownership of the content you post. You grant Speak up Mama a limited licence to
               store, display, and process that content to provide the service.
             </p>
           </section>
@@ -86,7 +86,7 @@ export default function TermsPage() {
           <section>
             <h2 className="text-xl font-semibold">8. Limitation of liability</h2>
             <p>
-              To the fullest extent permitted by law, HerVoice is not liable for indirect or
+              To the fullest extent permitted by law, Speak up Mama is not liable for indirect or
               consequential losses arising from your use of the service.
             </p>
           </section>
@@ -111,7 +111,7 @@ export default function TermsPage() {
             <Link href="/privacy" className="hover:text-foreground">
               Privacy Policy
             </Link>
-            <span>© 2026 HerVoice. All rights reserved.</span>
+            <span>© 2026 Speak up Mama. All rights reserved.</span>
           </div>
         </div>
       </footer>

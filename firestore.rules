@@ -1,7 +1,7 @@
 rules_version = '2';
 
-// HerVoice Firestore Security Rules
-// Project: kolado-mis (shared between the HerVoice mobile app and the CMS)
+// Speak up Mama Firestore Security Rules
+// Project: kolado-mis (shared between the Speak up Mama mobile app and the CMS)
 //
 // Model:
 //  - `users/{uid}` access is limited to the owner. The mobile community screen

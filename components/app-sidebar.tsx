@@ -122,7 +122,7 @@ export function AppSidebar() {
                 <Logo className="size-8" />
               </div>
               <div className="flex flex-col gap-0.5 leading-none">
-                <span className="font-semibold">HerVoice</span>
+                <span className="font-semibold">Speak up Mama</span>
                 <span className="text-xs text-muted-foreground">Management System</span>
               </div>
             </SidebarMenuButton>

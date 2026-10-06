@@ -1,6 +1,6 @@
 rules_version = '2';
 
-// HerVoice Firebase Storage Security Rules
+// Speak up Mama Firebase Storage Security Rules
 // Project: kolado-mis
 // Bucket: kolado-mis.firebasestorage.app
 //

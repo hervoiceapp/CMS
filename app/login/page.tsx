@@ -58,7 +58,7 @@ export default function LoginPage() {
       <Card className="w-full max-w-sm">
         <CardHeader className="items-center text-center">
           <Logo className="size-12" />
-          <CardTitle className="text-xl">HerVoice CMS</CardTitle>
+          <CardTitle className="text-xl">Speak up Mama CMS</CardTitle>
           <CardDescription>Sign in to manage content and appointments.</CardDescription>
         </CardHeader>
         <CardContent>

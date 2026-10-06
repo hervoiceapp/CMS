@@ -8,7 +8,7 @@ export default function PrivacyPage() {
         <div className="mx-auto flex max-w-3xl items-center justify-between px-6 py-4">
           <Link href="/" className="inline-flex items-center gap-2">
             <Logo className="h-8 w-8" />
-            <span className="font-semibold">HerVoice</span>
+            <span className="font-semibold">Speak up Mama</span>
           </Link>
           <Link href="/login" className="text-sm text-muted-foreground hover:text-foreground">
             CMS Sign in
@@ -24,7 +24,7 @@ export default function PrivacyPage() {
           <section>
             <h2 className="text-xl font-semibold">1. Who we are</h2>
             <p>
-              HerVoice (the &quot;App&quot;) is a maternal mental-health companion for mothers and
+              Speak up Mama (the &quot;App&quot;) is a maternal mental-health companion for mothers and
               families. This Privacy Policy explains what personal data we collect, why we collect
               it, and how you can control it.
             </p>
@@ -119,7 +119,7 @@ export default function PrivacyPage() {
             <Link href="/terms" className="hover:text-foreground">
               Terms of Service
             </Link>
-            <span>© 2026 HerVoice. All rights reserved.</span>
+            <span>© 2026 Speak up Mama. All rights reserved.</span>
           </div>
         </div>
       </footer>
